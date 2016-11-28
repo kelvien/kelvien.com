@@ -83,20 +83,41 @@ $(window).on('load', function() {
 	var c = $('#canvas');
 	var cc = c[0].getContext('2d');
 
-	$('#menu-container li').on('click', function() {
-		$('#menu-container li').removeClass('active');
-		$(this).addClass('active');
+	function registerMenu() {
+		$('#menu-container li').on('click', function() {
+			// $('#menu-container li').removeClass('active');
+			// $(this).addClass('active');
 
-		if ($(this).index() == 0) {
+			var to = 0;
+			switch($(this).data('menu')) {
+				case 'about':
+					to = 0;
+					break;
+				case 'story':
+					to = $(".event:first").offset().top - ($(window).height() / 2);
+					break;
+				case 'skills':
+					to = $(".event[data-event='skills']").offset().top - ($(window).height() / 2);
+					break;
+				case 'contact':
+					to = $(".event[data-event='contact']").offset().top - ($(window).height() / 2);
+					break;
+				default:
+					to = 0;
+					break;
+			}
+			// Some browsers have small offset
+			to += 5;
 			$('html, body').animate({
-		        scrollTop: 0
+		        scrollTop: to
 		    }, 1000);
-		} else {
-			$('html, body').animate({
-		        scrollTop: $("#contact").offset().top
-		    }, 1000);
-		}
-	});
+		});
+	}
+
+	function chooseMenu(menu) {
+		$('#menu-container li').removeClass('active');
+		$("#menu-container li[data-menu='" + menu + "']").addClass('active');
+	}
 
 	$('#contact-option li').on('click', function() {
 		$('#contact-option li').removeClass('active');
@@ -104,21 +125,21 @@ $(window).on('load', function() {
 	})
 
 	// var eventsOnSkillTopics = (isMobile) ? 'click' : 'mouseenter mouseleave click';
-	var eventsOnSkillTopics = 'click';
-	$('.skill-topic').on(eventsOnSkillTopics, function() {
-		$('.skill-topic').not(this).removeClass('active');
-		$('.skill-topic').find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
-		$('.skill-topic').find('.skill-content').css('max-height', 0);
-		if ($(this).hasClass('active')) {
-			$(this).removeClass('active');
-			$(this).find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
-			$(this).find('.skill-content').css('max-height', 0);
-		} else {
-			$(this).addClass('active');
-			$(this).find('.skill-pb').removeClass('skill-pb-unselected').addClass('skill-pb-selected');
-			$(this).find('.skill-content').css('max-height', 350);
-		}
-	});
+	// var eventsOnSkillTopics = 'click';
+	// $('.skill-topic').on(eventsOnSkillTopics, function() {
+	// 	$('.skill-topic').not(this).removeClass('active');
+	// 	$('.skill-topic').find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
+	// 	$('.skill-topic').find('.skill-content').css('max-height', 0);
+	// 	if ($(this).hasClass('active')) {
+	// 		$(this).removeClass('active');
+	// 		$(this).find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
+	// 		$(this).find('.skill-content').css('max-height', 0);
+	// 	} else {
+	// 		$(this).addClass('active');
+	// 		$(this).find('.skill-pb').removeClass('skill-pb-unselected').addClass('skill-pb-selected');
+	// 		$(this).find('.skill-content').css('max-height', 350);
+	// 	}
+	// });
 
 	function untoggleSkills() {
 		$('.skill-topic').removeClass('active');
@@ -164,17 +185,14 @@ $(window).on('load', function() {
 	}
 
 	function main() {
-		// addCanvasMask();
 		new Promise(function(resolve, reject) {
-			// resetController();
-
 			adjustMain();
 			addFixedMenuMask();
 			arrangeTimeline();
 
 			resolve();
 		}).then(function() {
-			addContact();
+			// addContact();
 			arrangeBg();
 		});
 	}
@@ -188,21 +206,17 @@ $(window).on('load', function() {
 		if (moving) {
 			if (companion.direction == 'up') {
 				bg = (companion.evenOdd) ? '-134px -460px' : '-222px -460px';
-				// bg = (companion.evenOdd) ? '-258px -293px' : '-291px -293px';
 				top = behindChar;
 			} else {
 				bg = (companion.evenOdd) ? '-5px -460px' : '-92px -460px';
-				// bg = (companion.evenOdd) ? '-191px -293px' : '-224px -293px';
 				top = top;
 			}
 		} else {
 			if (companion.direction == 'up') {
 				bg = '-178px -460px';
-				// bg = '-29px -293px';
 				top = behindChar;
 			} else {
 				bg = '-48px -460px';
-				// bg = '4px -293px';
 				top = top;
 			}
 		}
@@ -339,25 +353,19 @@ $(window).on('load', function() {
 
 	function showDialog(character, type) {
 		var dialogBox = character.element.find('.dialog-box');
-		// var text;
+
 		var bg;
 		switch(type) {
 			case 'arm':
 				bg = '0 -424px';
-				// text = '\uD83D\uDCAA';
 				break;
 			case 'love':
 				bg = '-31px -424px';
-				// text = '\uD83D\uDC9B';
 				break;
 			case 'sweat':
 				bg = '-62px -424px';
-				// text = '\uD83D\uDE05';
 				break;
 		}
-		// dialogBox.text(text).css({
-		// 	opacity: 1
-		// });
 		dialogBox.css({
 			'background-position': bg,
 			'opacity' : 1
@@ -374,12 +382,12 @@ $(window).on('load', function() {
 	function arrangeKelvien() {
 		var scene = new ScrollMagic.Scene({
 			triggerElement: '#timeline',
-			duration: $('#timeline').height() - $('.event:last').height() - 20, 
+			duration: $('#timeline').height() - $('.event:last').height(), 
 			reverse: true
 	    })
 	    .setPin('#kelvien')
 	    .on('enter', function() {
-	    	untoggleSkills();
+	    	// untoggleSkills();
 	    	addScroll();
 	    	c.css({
 	    		'opacity': 1
@@ -388,6 +396,7 @@ $(window).on('load', function() {
 	    .on('leave', function() {
 	    	removeScroll();
 	    	if (controller.info('scrollDirection') == 'REVERSE') {
+	    		chooseMenu('about');
 	    		kelvien.direction = 'down';
 	    		changeBg(kelvien, true);
 	    		c.css({
@@ -471,8 +480,15 @@ $(window).on('load', function() {
 						break;
 					case 'projectKelvien':
 						kelvien.state = 'normal';
+						break;
+					case 'skills':
+						kelvien.state = 'normal';
+						chooseMenu('skills');
+
 						showCompanion(kelvien);
 						break;
+					case 'contact':
+						chooseMenu('contact');
 					case 'done':
 						showDialog(kelvien, 'arm');
 						removeCompanion(kelvien);
@@ -481,16 +497,23 @@ $(window).on('load', function() {
 						break;
 					default:
 						kelvien.state = 'normal';
+						chooseMenu('story');
 						break;
 				}
 			})
 			scene.on('leave', function() {
+				switch($(e).data('event')) {
+					case 'skills':
+						untoggleSkills();
+						break;
+				}
 				removeDialog(kelvien);
 			});
 			scene.addTo(controller);
 		});
 
 		arrangeKelvien();
+		registerMenu();
 	}
 
 	function prepareImage() {
@@ -505,22 +528,12 @@ $(window).on('load', function() {
 
 	function arrangeBg() {	
 		cc.canvas.width = $(window).width();
+		console.log($('#main').height(), $(window).height());
+		cc.canvas.height = $('#main').outerHeight(true) + ($(window).height() / 2) - $('.event:last').outerHeight(true);
 
-		// var height = 0;
-		// $.each($("#about-container > div:not(#contact)"), function(i, e) {
-		// 	height += $(e).outerHeight(true);
-		// });
-		// if ($(window).width() < 768) {
-		// 	height += $('#fixed-menu').outerHeight(true);
-		// }
-		// cc.canvas.height = parseInt($('#main').css('margin-top')) + height;
-		console.log($('#main').innerHeight());
-		cc.canvas.height = parseInt($('#main').css('margin-top')) + $('#main').height();
 		if ($(window).width() <= 768) {
-			cc.canvas.height += $('#fixed-menu').outerHeight(true);
+			// cc.canvas.height += $('#fixed-menu').outerHeight(true);
 		}
-
-		// cc.clearRect(- 32, -32, cc.canvas.width, cc.canvas.height);
 
 		// Get Kelvien position
 		var kelvienX = kelvien.element.offset().left;
@@ -610,7 +623,7 @@ $(window).on('load', function() {
 						}
 					} else {
 						// After ocean
-						if (j - 32 < $(".event[data-event='done']").offset().top) {
+						if (j - 32 < $(".event:last").offset().top) {
 							if (i <= kelvienX && i + 32 >= kelvienX) {
 								draw = roadML.img;
 								signalDrawRoad = true;

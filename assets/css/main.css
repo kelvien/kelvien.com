@@ -157,6 +157,11 @@
 	transform: scale(1.3);
 }
 
+#bio {
+	margin-top: 20px;
+	text-align: center;
+}
+
 dl.center {
 	display: inline-block;
 	margin: 0 15px;
@@ -195,8 +200,12 @@ dl.center dd {
 	border: 2px solid #48485F;
 	border-radius: 2px;
 	color: #F8F8F8;
-	cursor: pointer;
-	margin: 10px 5px 0px 10px;
+	/* cursor: pointer; */
+	margin: 0px 0px 10px 15px;
+}
+
+.skill-topic:last-of-type {
+	margin: 0px 0px 0px 15px;
 }
 
 .skill-title {
@@ -205,6 +214,11 @@ dl.center dd {
 	background-size: contain;
 	text-transform: uppercase;
 	padding: 5px 5px 20px 30px;
+}
+
+.skill-title span {
+	letter-spacing: 2px;
+	font-weight: bolder;
 }
 
 .skill-pb {
@@ -244,19 +258,27 @@ dl.center dd {
 	background-image: url('../media/skill-bottom-bg.png');
 	color: #373A3C;
 	overflow: hidden;
-	max-height: 0px;
+	/*max-height: 0px;*/
+	max-height: 400px;
 	transition: max-height 0.5s;
+
+	padding: 5px 10px;
+}
+
+.skill-content p {
+	margin: 0;
+	font-weight: bolder;
 }
 
 .skill-content ul {
 	list-style: none;
-	padding: 5px 10px;
 	margin: 0;
 	text-transform: uppercase;
 	font-weight: 700;
 }
 
 .skill-content ul li span {
+	margin-left: 5px;
 	float: right;
 }
 
@@ -341,6 +363,11 @@ dl.center dd {
 	right: -24px;
 }
 
+.event-left .event-title.event-title-contact {
+	position: relative;
+	right: 24px;
+}
+
 .event-left .event-content {
 	border-top-left-radius: 2px;
 	border-bottom-left-radius: 2px;
@@ -350,6 +377,11 @@ dl.center dd {
 .event-right .event-title {
 	position: relative;
 	left: -24px;
+}
+
+.event-right .event-title.event-title-contact {
+	position: relative;
+	left: 24px;
 }
 
 .event-right .event-content {
@@ -510,54 +542,8 @@ footer {
 	padding-top: 7px;
 }*/
 
-#contact {
-	position: relative;
-	background: url('../media/contact-bg.png');
-	opacity: 0;
-}
-
-.contact-mask {
-	position: absolute;
-	width: 100%;
-	background-color: #393C44;
-	color: white;
-}
-
-#contact-mask-top {
-	top: 0;
-}
-
-#contact-mask-bottom {
-	bottom: 0;
-}
-
-#contact-content {
-	position: relative;
-}
-
-#contact-top {
-	position: relative;
-	text-align: center;
-	margin-top: 20px;
-}
-
-#contact-bottom {
-	position: absolute;
-	text-align: center;
-	width: 100%;
-}
-
-#contact-top div, #contact-bottom div{
+#kelvien-contact-info div {
 	display: inline-block;
-}
-
-#kelvien-contact, #user-contact {
-	position: relative;
-}
-
-#kelvien-contact-info-name {
-	display: inline-block;
-	font-weight: bolder;
 }
 
 .male-icon {
@@ -569,89 +555,22 @@ footer {
 	height: 16px;
 }
 
-#kelvien-contact-info {
+.event-left #kelvien-contact-info {
 	background: url('../media/sprite.png') -292px 0px;
 	width: 200px;
 	height: 58px;
 	padding: 5px 15px;
-	text-align: left;
-
-	margin-right: 10px;
 }
 
-#kelvien-contact-bg {
-	position: relative;
-	top: 100px;
-	width: 130px;
-	height: 35px;
-	background: url('../media/sprite.png') -43px -338px;
-	transform: scale(1.5);
-
-	z-index: 0;
+.event-right #kelvien-contact-info {
+	background: url('../media/sprite.png') -495px 0px;
+	width: 200px;
+	height: 58px;
+	padding: 5px 25px;
 }
 
-#me-contact {
-	position: absolute;
-	top: -35px;
-	left: 50%;
-	margin-left: -16px;
-
-	display: inline-block;
-	background: url('../media/sprite.png') 0 0;
-	width: 32px;
-	height: 55px;
-
-	transform: scale(1.2);
-
-	z-index: 1;
-}
-
-#contact-bottom-container {
-	padding: 5px;
-	background-color: #285068;
-	border: 2px solid #C8A848;
-	color: white;
-	border-radius: 2px;
-}
-
-#contact-prompt {
-	vertical-align: top;
-	margin: 5px;
-}
-
-#contact-option {
-	background-color: #D4E1DB;
-	border: 2px solid #706980;
-	color: black;
-	border-radius: 2px;
-}
-
-#contact-option ul{
-	display: inline-block;
-	list-style: none;
-	text-transform: uppercase;
-	margin: 0;
-	padding: 10px 15px;
-	text-align: left;
-}
-
-#contact-option ul li {
-	position: relative;
-	margin: 5px;
-	font-weight: bolder;
-	cursor: pointer;
-}
-
-#contact-option a {
-	color: black;
-	text-decoration: none;
-}
-
-#user-contact-bg {
-	width: 121px;
-	height: 16px;
-	background: url('../media/sprite.png') -49px -375px;
-	transform: scale(1.5);
+#contact-method {
+	margin-top: 10px;
 }
 
 #canvas {
