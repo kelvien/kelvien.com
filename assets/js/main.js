@@ -124,23 +124,6 @@ $(window).on('load', function() {
 		$(this).addClass('active');
 	})
 
-	// var eventsOnSkillTopics = (isMobile) ? 'click' : 'mouseenter mouseleave click';
-	// var eventsOnSkillTopics = 'click';
-	// $('.skill-topic').on(eventsOnSkillTopics, function() {
-	// 	$('.skill-topic').not(this).removeClass('active');
-	// 	$('.skill-topic').find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
-	// 	$('.skill-topic').find('.skill-content').css('max-height', 0);
-	// 	if ($(this).hasClass('active')) {
-	// 		$(this).removeClass('active');
-	// 		$(this).find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
-	// 		$(this).find('.skill-content').css('max-height', 0);
-	// 	} else {
-	// 		$(this).addClass('active');
-	// 		$(this).find('.skill-pb').removeClass('skill-pb-unselected').addClass('skill-pb-selected');
-	// 		$(this).find('.skill-content').css('max-height', 350);
-	// 	}
-	// });
-
 	function untoggleSkills() {
 		$('.skill-topic').removeClass('active');
 		$('.skill-topic').find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
@@ -185,6 +168,7 @@ $(window).on('load', function() {
 	}
 
 	function main() {
+		// resetController();
 		new Promise(function(resolve, reject) {
 			adjustMain();
 			addFixedMenuMask();
@@ -480,12 +464,11 @@ $(window).on('load', function() {
 						break;
 					case 'projectKelvien':
 						kelvien.state = 'normal';
+						showCompanion(kelvien);
 						break;
 					case 'skills':
 						kelvien.state = 'normal';
 						chooseMenu('skills');
-
-						showCompanion(kelvien);
 						break;
 					case 'contact':
 						chooseMenu('contact');
@@ -786,7 +769,9 @@ $(window).on('load', function() {
 	}
 
 	$(window).on('resize', function() {
-		// main();
+		if (!isFirefox) {
+			// main();
+		}
 	});
 
 });

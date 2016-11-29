@@ -323,7 +323,7 @@ dl.center dd {
 .event {
 	display: block;
 	position: relative;
-	/*width: 50%;*/
+
 	max-width: 50%;
 	margin-bottom: 10px;
 	clear: both;
@@ -530,18 +530,6 @@ footer {
 	padding: 5px;
 }
 
-/*.place-sign {
-	background: url('../media/sprite.png') -67px -111px;
-	width: 98px;
-	height: 38px;
-}
-
-.place-sign p {
-	text-align: center;
-	margin: 0;
-	padding-top: 7px;
-}*/
-
 #kelvien-contact-info div {
 	display: inline-block;
 }
@@ -581,13 +569,12 @@ footer {
 
 	border-bottom: 4px solid #393C44;
 
-	/*http://stackoverflow.com/questions/18547042/resizing-a-canvas-image-without-blurring-it*/
-	image-rendering: optimizeSpeed;             
-    image-rendering: -moz-crisp-edges;          
-    image-rendering: -webkit-optimize-contrast; 
-    image-rendering: -o-crisp-edges;            
-    image-rendering: crisp-edges;               
-    -ms-interpolation-mode: nearest-neighbor;
+ 	image-rendering: false;             
+    image-rendering: false;          
+    image-rendering: false; 
+    image-rendering: false;            
+    image-rendering: false;               
+    -ms-interpolation-mode: false;
 
     opacity: 0;
     transition: opacity 1s;
@@ -602,6 +589,10 @@ footer {
 /**/
 html, body {
 	overflow-x: hidden;
+}
+
+div {
+	image-rendering: pixelated;
 }
 
 ul li {
