@@ -7,7 +7,7 @@ var Kelvien = function() {
 	this.initialPositionX = parseInt(this.element.css('left'));
 	this.initialPositionY = parseInt(this.element.css('top'));
 
-	this.movingThreshold = 6; // Multiple of 2 ONLY
+	this.movingThreshold = 8; // Multiple of 2 ONLY
 	this.movingCount = this.movingThreshold;
 
 	this.isMoving;
@@ -25,8 +25,6 @@ var Companion = function(el) {
 	this.direction = 'down';
 }
 
-var FloorLayer = [];
-
 var Tile = function(img, name, x, y, deg) {
 	this.src = img;
 	this.name = name;
@@ -38,10 +36,12 @@ var Tile = function(img, name, x, y, deg) {
 	this.posY;
 
 	this.deg = deg;
+	this.img = this.processTile(this);
 
-	this.img = this.processImage(this);
+	this.neighbors = [];
 }
-Tile.prototype.processImage = function(el) {
+
+Tile.prototype.processTile = function(el) {
 	var offscreenCanvas = document.createElement('canvas');
 	var offscreenCtx = offscreenCanvas.getContext('2d');
 	offscreenCanvas.width = 32;
@@ -57,6 +57,162 @@ Tile.prototype.processImage = function(el) {
 		offscreenCtx.drawImage(this.src, this.x, this.y, 32, 32, 0, 0, 32, 32);
 		return offscreenCanvas;
 	}
+}
+
+var Item = function(img, name, x, y, w, h) {
+	this.src = img;
+	this.name = name;
+	// This x and y is inclusive (0) when we are looking at the sprite image
+	this.x = x;
+	this.y = y;
+
+	this.w = w;
+	this.h = h;
+
+	this.posX;
+	this.posY;
+
+	this.img = this.processItem(this);
+}
+
+Item.prototype.processItem = function(el) {
+	var offscreenCanvas = document.createElement('canvas');
+	var offscreenCtx = offscreenCanvas.getContext('2d');
+	offscreenCanvas.width = el.w;
+	offscreenCanvas.height = el.h;
+
+	offscreenCtx.drawImage(this.src, this.x, this.y, el.w, el.h, 0, 0, el.w, el.h);
+	return offscreenCanvas;
+}
+
+var Story = function(context, anim) {
+	var alias = this;
+
+	this.cc = context;
+	this.cc.webkitImageSmoothingEnabled = false;
+	this.cc.mozImageSmoothingEnabled = false;
+	this.cc.msImageSmoothingEnabled = false;
+	this.cc.imageSmoothingEnabled = false;
+
+	this.tiles = [];
+	this.sections = this.getSections();
+	this.pointers = this.getPointers();
+
+	this.animation = anim;
+
+	/// TILES ///
+	this.tile = [];
+	this.loadImage().then(function() {
+		alias.draw();
+		alias.animate();
+	});
+}
+Story.prototype.loadImage = function() {
+	var alias = this;
+
+	return new Promise(function(resolve, reject) {
+		var img = new Image();
+		img.src = 'assets/media/sprite.png';
+		img.onload = function() {
+			resolve(img);
+		}
+	}).then(function(img) {
+		return new Promise(function(resolve, reject) {
+			alias.tile['grass'] = new Tile(img, 'grass', 34, 226, 0);
+			alias.tile['grass1'] = new Tile(img, 'grass1', 136, 260, 0);
+			alias.tile['rockTile'] = new Tile(img, 'rockTile', 170, 260, 0);
+			alias.tile['oceanTL'] = new Tile(img, 'oceanTL', 34, 260, 0);
+			alias.tile['oceanTM'] = new Tile(img, 'oceanTM', 102, 192, 0);
+			alias.tile['oceanTR'] = new Tile(img, 'oceanTR', 136, 192, 0);
+			alias.tile['oceanML'] = new Tile(img, 'oceanML', 136, 226, 0);
+			alias.tile['oceanMM'] = new Tile(img, 'oceanMM', 68, 192, 0);
+			alias.tile['oceanMR'] = new Tile(img, 'oceanMR', 68, 226, 0);
+			alias.tile['oceanBL'] = new Tile(img, 'oceanBL', 68, 260, 0);
+			alias.tile['oceanBM'] = new Tile(img, 'oceanBM', 102, 260, 0);
+			alias.tile['oceanBR'] = new Tile(img, 'oceanBR', 102, 226, 0);
+			alias.tile['roadTL'] = new Tile(img, 'roadTL', 0, 192, 90);
+			alias.tile['roadTM'] = new Tile(img, 'roadTM', 0, 226, 0);
+			alias.tile['roadTR'] = new Tile(img, 'roadTR', 0, 192, 180);
+			alias.tile['roadML'] = new Tile(img, 'roadML', 0, 226, -90);
+			alias.tile['roadMM'] = new Tile(img, 'roadMM', 0, 260, 90);
+			alias.tile['roadMR'] = new Tile(img, 'roadMR', 0, 226, 90);
+			alias.tile['roadBL'] = new Tile(img, 'roadBL', 0, 192, 0);
+			alias.tile['roadBM'] = new Tile(img, 'roadBM', 0, 226, 180);
+			alias.tile['roadBR'] = new Tile(img, 'roadBR', 0, 192, -90);
+			alias.tile['home'] = new Item(img, 'home', 620, 372, 160, 128);
+			alias.tile['tallBuiding'] = new Item(img, 'tallBuiding', 782, 23, 222, 476);
+
+			resolve();
+		});
+	});	
+}
+
+Story.prototype.getSections = function() {
+	// TODO
+}
+
+Story.prototype.getPointers = function() {
+	// Get Kelvien position
+	// var kelvienX = kelvien.element.offset().left;
+	// var ocean = $(".event[data-event='fly']");
+	// var oceanY = ocean.offset().top;
+	// var oceanH = 0;
+	// $.each(ocean, function(i, e) {
+	// 	oceanH += $(e).outerHeight(true);
+	// });
+}
+
+Story.prototype.stopAnimation = function() {
+	this.animation = false;
+}
+
+Story.prototype.animate = function() {
+	var alias = this;
+	// Ocean - Lapras
+	// Ending - Mewtwo Mew chasing each other
+	// TODO
+	if (alias.animation) {
+		requestAnimationFrame(function() {
+			alias.animate();
+		});
+	}
+}
+
+Story.prototype.draw = function() {
+	// Draw floor tile from top to bottom
+	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
+		this.tiles[j] = [];
+		for (var i = 0; i < this.cc.canvas.width / 32; i++) {	
+			var tile = null;
+			// TODO
+			// Logic for what tile to use
+			tile = this.tile['grass'];
+			//
+			// Register top, left, right, and bottom's tile on each other
+			this.tiles[j][i] = this.registerTile(tile, i, j);
+			// Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
+			this.cc.drawImage(tile.img, 0, 0, 32, 32, i * 32, j * 32, 32, 32);
+		}
+	}
+	// TODO
+	// Items
+}
+
+Story.prototype.registerTile = function(tile, i, j) {
+	var tempTile = $.extend(true, {}, tile);
+	tempTile.x = i;
+	tempTile.y = j;
+
+	if (j != 0) {
+		this.tiles[j-1][i].neighbors.bottom = tempTile;
+		tempTile.neighbors.top = this.tiles[j-1][i];
+	}
+	if (i != 0) {
+		this.tiles[j][i-1].neighbors.right = tempTile;
+		tempTile.neighbors.left = this.tiles[j][i-1];
+	}
+
+	return tempTile;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,14 +235,12 @@ $(window).on('load', function() {
 
 	var midWindow = $(window).height() / 2;
 	var kelvien = new Kelvien();
-
 	var c = $('#canvas');
 	var cc = c[0].getContext('2d');
 
 	function registerMenu() {
+		var duration = 1000;
 		$('#menu-container li').on('click', function() {
-			// $('#menu-container li').removeClass('active');
-			// $(this).addClass('active');
 
 			var to = 0;
 			switch($(this).data('menu')) {
@@ -94,23 +248,22 @@ $(window).on('load', function() {
 					to = 0;
 					break;
 				case 'story':
-					to = $(".event:first").offset().top - ($(window).height() / 2);
+					to = $(".event:first").offset().top + parseInt($(".event:first").css('padding-top')) - ($(window).height() / 2);
 					break;
 				case 'skills':
 					to = $(".event[data-event='skills']").offset().top - ($(window).height() / 2);
 					break;
 				case 'contact':
-					to = $(".event[data-event='contact']").offset().top - ($(window).height() / 2);
+					to = $('body').height();
 					break;
 				default:
 					to = 0;
 					break;
 			}
-			// Some browsers have small offset
-			to += 5;
+
 			$('html, body').animate({
 		        scrollTop: to
-		    }, 1000);
+		    }, duration);
 		});
 	}
 
@@ -124,22 +277,16 @@ $(window).on('load', function() {
 		$(this).addClass('active');
 	})
 
-	function untoggleSkills() {
-		$('.skill-topic').removeClass('active');
-		$('.skill-topic').find('.skill-pb').removeClass('skill-pb-selected').addClass('skill-pb-unselected');
-		$('.skill-topic').find('.skill-content').css('max-height', 0);
-	}
-
 	function adjustMain() {
 		var marginTop = (window.innerWidth < 768) ? 0 : Math.max(0, ((window.innerHeight - $("#about").outerHeight(true)) / 2) - $('#scroll-helper').outerHeight(true));
-		$('#main').css('margin-top', marginTop);
+		$('#main').css('padding-top', marginTop);
 	}
 
 	function addFixedMenuMask() {
 		/* Bootstrap MD down */
 		if (window.innerWidth < 768) {
 			if (!$('#menu-mask').length) {
-				var mask = $('<div></div>').attr('id', 'menu-mask').height($('#fixed-menu').height());
+				var mask = $('<div></div>').attr('id', 'menu-mask').height($('#fixed-menu').outerHeight(true));
 				$('#about-container').before(mask);
 			}
 		} else {
@@ -176,7 +323,6 @@ $(window).on('load', function() {
 
 			resolve();
 		}).then(function() {
-			// addContact();
 			arrangeBg();
 		});
 	}
@@ -340,14 +486,11 @@ $(window).on('load', function() {
 
 		var bg;
 		switch(type) {
-			case 'arm':
-				bg = '0 -424px';
-				break;
 			case 'love':
-				bg = '-31px -424px';
+				bg = '0px -424px';
 				break;
 			case 'sweat':
-				bg = '-62px -424px';
+				bg = '-31px -424px';
 				break;
 		}
 		dialogBox.css({
@@ -365,28 +508,40 @@ $(window).on('load', function() {
 
 	function arrangeKelvien() {
 		var scene = new ScrollMagic.Scene({
-			triggerElement: '#timeline',
-			duration: $('#timeline').height() - $('.event:last').height(), 
+			triggerElement: '.event:first',
+			duration: $('#timeline').height() - $('.event:last').outerHeight(true), 
 			reverse: true
 	    })
 	    .setPin('#kelvien')
 	    .on('enter', function() {
-	    	// untoggleSkills();
 	    	addScroll();
 	    	c.css({
 	    		'opacity': 1
 	    	});
+	    	$('#scroll-helper').css({
+	    		'opacity': 0
+	    	});
+	    	$('#about').css({
+	    		'opacity': 0
+	    	});
+	    	chooseMenu('story');
 	    })
 	    .on('leave', function() {
 	    	removeScroll();
 	    	if (controller.info('scrollDirection') == 'REVERSE') {
-	    		chooseMenu('about');
 	    		kelvien.direction = 'down';
 	    		changeBg(kelvien, true);
 	    		c.css({
 		    		'opacity': 0
 		    	});
 	    	}
+	    	$('#scroll-helper').css({
+	    		'opacity': 1
+	    	});
+	    	$('#about').css({
+	    		'opacity': 1
+	    	});
+	    	chooseMenu('about');
 	    })
 	    .addTo(controller);
 	}
@@ -464,30 +619,23 @@ $(window).on('load', function() {
 						break;
 					case 'projectKelvien':
 						kelvien.state = 'normal';
-						showCompanion(kelvien);
-						break;
-					case 'skills':
-						kelvien.state = 'normal';
-						chooseMenu('skills');
+						// showCompanion(kelvien);
 						break;
 					case 'contact':
 						chooseMenu('contact');
 					case 'done':
-						showDialog(kelvien, 'arm');
-						removeCompanion(kelvien);
+						// removeCompanion(kelvien);
 						kelvien.state = 'done';
 						changeBg(kelvien, false);
 						break;
 					default:
 						kelvien.state = 'normal';
-						chooseMenu('story');
 						break;
 				}
 			})
 			scene.on('leave', function() {
 				switch($(e).data('event')) {
 					case 'skills':
-						untoggleSkills();
 						break;
 				}
 				removeDialog(kelvien);
@@ -499,232 +647,13 @@ $(window).on('load', function() {
 		registerMenu();
 	}
 
-	function prepareImage() {
-		return new Promise(function(resolve, reject) {
-			var img = new Image();
-			img.src = 'assets/media/sprite.png';
-			img.onload = function() {
-				resolve(img);
-			}
-		});	
-	}
-
 	function arrangeBg() {	
+		var h = (isFirefox) ? 50 : 0;
 		cc.canvas.width = $(window).width();
-		console.log($('#main').height(), $(window).height());
-		cc.canvas.height = $('#main').outerHeight(true) + ($(window).height() / 2) - $('.event:last').outerHeight(true);
+		cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
+		$('body').height(cc.canvas.height);
 
-		if ($(window).width() <= 768) {
-			// cc.canvas.height += $('#fixed-menu').outerHeight(true);
-		}
-
-		// Get Kelvien position
-		var kelvienX = kelvien.element.offset().left;
-		var ocean = $(".event[data-event='fly']");
-		var oceanY = ocean.offset().top;
-		var oceanH = 0;
-		$.each(ocean, function(i, e) {
-			oceanH += $(e).outerHeight(true);
-		});
-
-		prepareImage().then(function(img) {
-			// Insert Floor
-			var grass = new Tile(img, 'grass', 34, 226, 0);
-			var grass1 = new Tile(img, 'grass1', 136, 260, 0);
-			var oceanTL = new Tile(img, 'oceanTL', 34, 260, 0);
-			var oceanTM = new Tile(img, 'oceanTM', 102, 192, 0);
-			var oceanTR = new Tile(img, 'oceanTR', 136, 192, 0);
-			var oceanML = new Tile(img, 'oceanML', 136, 226, 0);
-			var oceanMM = new Tile(img, 'oceanMM', 68, 192, 0);
-			var oceanMR = new Tile(img, 'oceanMR', 68, 226, 0);
-			var oceanBL = new Tile(img, 'oceanBL', 68, 260, 0);
-			var oceanBM = new Tile(img, 'oceanBM', 102, 260, 0);
-			var oceanBR = new Tile(img, 'oceanBR', 102, 226, 0);
-			var roadTL = new Tile(img, 'roadTL', 0, 192, 90);
-			var roadTM = new Tile(img, 'roadTM', 0, 226, 0);
-			var roadTR = new Tile(img, 'roadTR', 0, 192, 180);
-			var roadML = new Tile(img, 'roadML', 0, 226, -90);
-			var roadMM = new Tile(img, 'roadMM', 0, 260, 90);
-			var roadMR = new Tile(img, 'roadMR', 0, 226, 90);
-			var roadBL = new Tile(img, 'roadBL', 0, 192, 0);
-			var roadBM = new Tile(img, 'roadBM', 0, 226, 180);
-			var roadBR = new Tile(img, 'roadBR', 0, 192, -90);
-
-			var draw = undefined;
-
-			var drawOcean = false;
-			var signalDrawOcean = false;
-
-			var drawEndSideRoad = false;
-			var signalDrawRoad = false;
-
-			var signalEndRoad = false;
-
-			for (var j = 0; j < cc.canvas.height; j += 32) {
-				for (var i = 0; i < cc.canvas.width; i += 32) {			
-					if (j < oceanY + (2 * 32)) {
-						// Before ocean
-						if (i <= kelvienX && i + 32 >= kelvienX) {
-							draw = roadML.img;
-							signalDrawRoad = true;
-						} else if (signalDrawRoad) {
-							draw = roadMR.img;
-							signalDrawRoad = false;
-						} else {
-							draw = grass.img;
-						}
-					} else if (j < oceanY + oceanH) {
-						// Ocean detected
-						if (j + 32 >= oceanY + oceanH) {
-							// End of ocean
-							if (i == 0) {
-								draw = oceanBL.img;
-							} else if (i + 32 >= cc.canvas.width) {
-								draw = oceanBR.img;
-							} else {
-								draw = oceanBM.img;
-							}
-						} else if (drawOcean) {
-							// Draw ocean
-							if (i == 0) {
-								draw = oceanML.img;
-							} else if (i + 32 >= cc.canvas.width) {
-								draw = oceanMR.img;
-							} else {
-								draw = oceanMM.img;
-							}
-						} else {
-							// Beginning of ocean
-							if (i == 0) {
-								draw = oceanTL.img;
-							} else if (i + 32 >= cc.canvas.width) {
-								draw = oceanTR.img;
-							} else {
-								draw = oceanTM.img;
-							}
-							signalDrawOcean = true;
-						}
-					} else {
-						// After ocean
-						if (j - 32 < $(".event:last").offset().top) {
-							if (i <= kelvienX && i + 32 >= kelvienX) {
-								draw = roadML.img;
-								signalDrawRoad = true;
-							} else if (signalDrawRoad) {
-								draw = roadMR.img;
-								signalDrawRoad = false;
-							} else {
-								draw = grass.img;
-							}
-						} else {
-							if (!signalEndRoad && i <= kelvienX && i + 32 >= kelvienX) {
-								draw = roadBL.img;
-								signalDrawRoad = true;
-							} else if (!signalEndRoad && signalDrawRoad) {
-								draw = roadBR.img;
-								signalDrawRoad = false;
-								signalEndRoad = true;
-							} else {
-								draw = grass.img;
-							}
-						}
-					}
-
-					cc.drawImage(draw, 0, 0, 32, 32, i, j, 32, 32);
-				}
-				if (signalDrawOcean) {
-					drawOcean = true;
-				}
-			}
-
-			cc.save();
-			cc.globalCompositeOperation = 'source-over';
-			
-			// Insert Items
-			// Draw trees on sides
-			// Draw houses on sides after trees
-			// Draw lapras on ocean
-		});
-	}
-
-	function addContact() {
-		var h = $(window).height();
-		h += (isFirefox) ? 50 : 0;
-		$('#contact').height(h);
-		var maxH = $(window).height() / 4;
-
-		$('#contact-content').css({
-			'padding-top': maxH
-		});
-
-		var sceneContact = new ScrollMagic.Scene({
-			triggerElement: '#contact',
-			duration: $('#contact').height() / 2,
-			reverse: true
-	    })
-	    .setTween('#contact', 1, {opacity: 1})
-	    .on('enter', function() {
-	    	$('#fixed-menu li:nth(1)').addClass('active');
-	    	$('#fixed-menu li:nth(0)').removeClass('active');
-	    })
-	    .on('leave', function() {
-	    	if (controller.info('scrollDirection') == 'REVERSE') {
-	    		$('#fixed-menu li:nth(0)').addClass('active');
-	    		$('#fixed-menu li:nth(1)').removeClass('active');
-	    	}
-	    })
-	    .addTo(controller);
-
-	    var sceneContact = new ScrollMagic.Scene({
-			triggerElement: '#contact',
-			duration: $('#contact').height() / 2,
-			reverse: true
-	    })
-	    .setTween('#fixed-menu', 1, {top: 0})
-	    .addTo(controller);
-
-	    $('#contact-mask-top').height(0);
-
-	    var sceneContactMaskTop = new ScrollMagic.Scene({
-			triggerElement: '#contact',
-			duration: $('#contact').height() / 2,
-			reverse: true
-	    })
-	    .setTween('#contact-mask-top', 1, {height: maxH})
-	    .addTo(controller);
-	    
-	    $('#contact-mask-bottom').css({
-	    	'height': maxH
-	    });
-
-	    $('#contact-content').css({
-	    	'height': $('#contact').height() - maxH 
-	    });
-
-		$('#contact-top').css({
-			'left': $(window).width()
-		});
-
-	    var sceneContactTop = new ScrollMagic.Scene({
-	    	triggerElement: '#contact',
-			duration: $('#contact').height() / 2,
-			reverse: true
-	    })
-	    .setTween('#contact-top', 1, {left: 0})
-	    .addTo(controller);
-
-	    $('#contact-bottom').css({
-			'left': -$(window).width(),
-			'bottom': 0
-		});
-
-	    var sceneContactBottom = new ScrollMagic.Scene({
-	    	triggerElement: '#contact',
-			duration: $('#contact').height() / 2,
-			reverse: true
-	    })
-	    .setTween('#contact-bottom', 1, {left: 0})
-	    .addTo(controller);
+		var story = new Story(cc, false); // set to true for start animation
 	}
 
 	function addScroll() {

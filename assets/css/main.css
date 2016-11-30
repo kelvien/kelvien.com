@@ -15,6 +15,7 @@
 
 #fixed-menu {
 	position: fixed;
+	margin-bottom: 10px;
 
 	z-index: 2;
 }
@@ -70,14 +71,18 @@
 	background-color: #D4E1DB;
 	border: 4px solid #393C44;
 	border-radius: 4px;
-	margin: 10px 0;
 	padding: 15px 0;
 
+	transition: opacity 0.5s;
 	z-index: 0;
 }
 
-.about-title, .about-content {
+.about-title {
 	padding: 5px 15px;
+}
+
+.about-content {
+	padding: 5px 15px 0px 15px;
 }
 
 .about-center {
@@ -227,7 +232,7 @@ dl.center dd {
 }
 
 .skill-pb-unselected {
-	background: url('../media/sprite.png') 1427px 0px;
+	background: url('../media/sprite.png') -1427px 0px;
 	position: absolute;
     width: 40px;
     height: 40px;
@@ -237,7 +242,7 @@ dl.center dd {
 }
 
 .skill-pb-selected {
-	background: url('../media/sprite.png') 1386px 0px;
+	background: url('../media/sprite.png') -1314px 0px;
 	position: absolute;
 	width: 40px;
     height: 48px;
@@ -247,7 +252,7 @@ dl.center dd {
 }
 
 .skill-indicator {
-	background: url('../media/sprite.png') 1568px 0px;
+	background: url('../media/sprite.png') -2232px 0px;
 	width: 140px;
 	height: 14px;
 	float: right;
@@ -283,8 +288,10 @@ dl.center dd {
 }
 
 #scroll-helper {
-	padding: 20px 0 10px 0;
+	padding: 20px 0 20px 0;
 	text-align: center;
+
+	transition: opacity 0.5s;
 }
 
 #scroll-helper h4 {
@@ -306,7 +313,6 @@ dl.center dd {
 #timeline {
 	position: relative;
 	margin: 0 0 20px 0;
-	padding: 20px 0;
 	height: 100%;
 }
 
@@ -330,6 +336,10 @@ dl.center dd {
 
 	opacity: 0;
 	transition: opacity 0.5s;
+}
+
+#event-first {
+	padding-top: 20px;
 }
 
 .project-tags {
@@ -392,7 +402,7 @@ dl.center dd {
 
 .event-title h4 {
 	font-size: 26px;
-	text-shadow: 1px 1px #FFFFFF;
+	// text-shadow: 1px 1px #FFFFFF;
 	font-weight: bolder;
 	text-transform: uppercase;
 	margin: 0;
@@ -474,7 +484,6 @@ dl.center dd {
 
 #kelvien {
 	position: absolute;
-	top: 20px;
 	left: 50%;
 	background: url('../media/sprite.png') 0 -150px;
 	width: 32px;
@@ -557,6 +566,10 @@ footer {
 	padding: 5px 25px;
 }
 
+.contact {
+	width: 100%;
+}
+
 #contact-method {
 	margin-top: 10px;
 }
@@ -566,18 +579,15 @@ footer {
 	top: 0;
 	left: 0;
 	z-index: -1;
-
-	border-bottom: 4px solid #393C44;
-
- 	image-rendering: false;             
-    image-rendering: false;          
-    image-rendering: false; 
-    image-rendering: false;            
-    image-rendering: false;               
-    -ms-interpolation-mode: false;
-
+         
     opacity: 0;
     transition: opacity 1s;
+}
+
+#test {
+	background: url('../media/sprite.png') 0px 0px;
+	width: 100px;
+	height: 100px;
 }
 
 @keyframes signToScroll {
@@ -588,11 +598,15 @@ footer {
 
 /**/
 html, body {
+	/* Fixed menu will have overflow. does not comply to Bootstrap Grid system*/
+	position: relative;
 	overflow-x: hidden;
 }
 
 div {
 	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	 -ms-interpolation-mode: nearest-neighbor;
 }
 
 ul li {

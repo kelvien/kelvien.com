@@ -40,7 +40,7 @@
                 font-family: pokemon;
             }
         </style>
-
+        <!-- <div id="test"></div> -->
         <div id="main" class="container-fluid">
             <div class="row">
                 <div id="fixed-menu" class="col-xs-12 col-md-3 offset-lg-1 col-lg-3 offset-xl-2 col-xl-2">
@@ -246,10 +246,10 @@
                                     <div id="profl-container">
                                         <div id="profl-video-pokeball-border"></div>
                                         <div id="profl-video-mask">
-                                            <div id="profl-video" alt="My mood coding at 3am"></div>
+                                            <span id="profl-video" title="Coffee !"></span>
                                         </div>
                                         <div id="profl-figure" hidden></div>
-                                        <div id="bio" hidden>&#x201C  &#x201D</div>
+                                        <div id="bio" hidden>&#x201C &#x201D</div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-8 about-center">
@@ -274,7 +274,7 @@
                             <div><span class="dialog-box"></span></div>
                         </div>
                         <div id="timeline-line" hidden></div>
-                        <div class="event">
+                        <div class="event" id="event-first">
                             <div class="event-title">
                                 <h4>Born</h4>
                             </div>
@@ -347,7 +347,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : PERMIAS v.2</h4>
-                                <p>Improved PERMIAS v.1. by using &#x201CResponsive&#x201D and &#x201CMaterial&#x201D design for a more modern-look website.</p>
+                                <p>Improved PERMIAS v.1. by using &#x201C Responsive &#x201D and &#x201C Material &#x201D design for a more modern-look website.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">HTML</div>
@@ -366,7 +366,7 @@
                             <div class="event-content">
                                 <h4 class="event-content-title">New Self</h4>
                                 <p>My soul knows its savior.</p>
-                                <p>&#x201C Truly , truly, I say to you, whoever believes has eternal life. &#x201D - John 6:47</p>
+                                <p>&#x201C All have sinned and fall short of the glory of God, and are justified by His grace as a gift. &#x201D - Romans 3 : 23-24</p>
                             </div>
                         </div>
                         <div class="event project">
@@ -375,7 +375,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : International Student Council</h4>
-                                <p>Built a website and a light-weight custom Content Management System (CMS) to manage a student organization's content. Used &#x201CResponsive&#x201D and &#x201CMaterial&#x201D design.</p>
+                                <p>Built a website and a light-weight custom Content Management System (CMS) to manage a student organization's content. Used &#x201C Responsive &#x201D and &#x201C Material &#x201D design.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">MySQL</div>
@@ -498,19 +498,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="event project" data-event='contact'>
+                        <div class="event project contact" data-event='contact'>
                             <div class="event-title event-title-contact">
                                 <h4>Contact</h4>
                             </div>
                             <div class="skill-topic">
                                 <div class="skill-title">
-                                    <div class="skill-pb skill-pb-unselected"></div>
+                                    <div class="skill-pb skill-pb-selected"></div>
                                     <span>Kelvien Hidayat</span>
-                                    <div class="skill-indicator"></div>
+                                    <span class="skill-indicator" title="Experience"></span>
                                 </div>
                                 <div class="skill-content">
                                     <p hidden>Available to freelance</p>
-                                    <p>Email me at <a href="mailto:mas@kelvien.com?subject=Hey Kelvien !">mas@kelvien.com</a></p>
+                                    <p>Email me at <a href="mailto:mas@kelvien.com">mas@kelvien.com</a></p>
                                     <p>You can also find me at <a target="_blank" href="https://www.linkedin.com/in/kelvien">Linkedin</a></p>
                                 </div>
                             </div>
@@ -521,12 +521,13 @@
             </div>
         </div>
         <canvas id="canvas"></canvas>
+        <footer><b>by Kelvien Hidayat &#x00B5 DEC 2016</b></footer>
 	</body>
 
     <script type="text/javascript" src="assets/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="assets/greensock-js/src/minified/TweenMax.min.js"></script>
+    <!-- <script type="text/javascript" src="assets/greensock-js/src/minified/TweenMax.min.js"></script> -->
     <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/ScrollMagic.min.js"></script>
-    <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/animation.gsap.min.js"></script>
+    <!-- <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/animation.gsap.min.js"></script> -->
     <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/jquery.ScrollMagic.min.js"></script>
     <!-- <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/debug.addIndicators.min.js"></script> -->
 	<script type="text/javascript" src="assets/js/main.js"></script>
