@@ -111,6 +111,9 @@ var Story = function(context, anim) {
 		alias.draw();
 		alias.animate();
 	});
+
+	this.items = [];
+	this.characters = [];
 }
 Story.prototype.loadImage = function() {
 	var alias = this;
@@ -164,11 +167,17 @@ Story.prototype.loadImage = function() {
 Story.prototype.getPointers = function() {
 	// Get Kelvien position
 	this.position = [];
+
+	this.position['windowW'] = $(window).width();
+	this.position['windowH'] = $(window).height();
+
 	this.position['kelvienT'] = $('#kelvien').offset().top;
 	this.position['kelvien'] = $('#kelvien').offset().left;
 	this.position['adjustMostLeft'] = this.position['kelvien'] % 32;
+	
 	this.position['born'] = $(".event:first").offset().top;
 	this.position['ocean'] = $(".event[data-event='fly']:first").offset().top;
+	this.position['oceanH'] = $(".event[data-event='fly']:first").outerHeight(true) + $(".event[data-event='fly']:last").outerHeight(true);
 	this.position['ending'] = $(".event:last").offset().top;
 	this.position['endingH'] = $('.event:last').outerHeight(true);
 }
@@ -191,6 +200,7 @@ Story.prototype.animate = function() {
 
 Story.prototype.draw = function() {
 	console.log(this.position);
+
 	// Draw floor tile from top to bottom
 	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
 		this.tiles[j] = [];
@@ -204,7 +214,11 @@ Story.prototype.draw = function() {
 
 			// ROAD
 			var roadThreshold = 1 * 32;
-			if (adjustedJ > this.position['born'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+			var oceanThreshold = 1 * 32;
+			if (adjustedJ >= this.position['born'] && adjustedJ + oceanThreshold <= this.position['ocean']
+				||
+				adjustedJ - oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + this.position['endingH']) {
+				// Before and after ocean
 				if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
 					||
 					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
@@ -234,6 +248,36 @@ Story.prototype.draw = function() {
 				} else {
 					tile = this.tile['grass1'];	
 				}
+			} else if (adjustedJ - oceanThreshold >= this.position['ocean'] && adjustedJ + oceanThreshold <= this.position['ocean'] + this.position['oceanH']) {
+				// Ocean 
+				if (adjustedJ - (oceanThreshold + 32) <= this.position['ocean'] && adjustedJ - oceanThreshold >= this.position['ocean']) {
+					if (adjustedI <= 0) {
+						tile = this.tile['oceanTL'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						tile = this.tile['oceanTR'];
+					} else {
+						tile = this.tile['oceanTM'];
+					}
+				} else if (adjustedJ + (oceanThreshold + 32) >= this.position['ocean'] + this.position['oceanH']) {
+					if (adjustedI <= 0) {
+						console.log('a');
+						tile = this.tile['oceanBL'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						console.log('b');
+						tile = this.tile['oceanBR'];
+					} else {
+						console.log('c');
+						tile = this.tile['oceanBM'];
+					}
+				} else {
+					if (adjustedI <= 0) {
+						tile = this.tile['oceanML'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						tile = this.tile['oceanMR'];
+					} else {
+						tile = this.tile['oceanMM'];
+					}
+				}
 			} else {
 				tile = this.tile['grass1'];	
 			}
@@ -242,7 +286,7 @@ Story.prototype.draw = function() {
 			this.tiles[j][i] = this.registerTile(tile, i, j);
 			// Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
 			// draw width and height are higher than the actual because Safari does not process floating point position (i,j)
-			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 34, 34);
+			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
 		}
 	}
 	// TODO
