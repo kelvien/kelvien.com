@@ -25,7 +25,7 @@ var Companion = function(el) {
 	this.direction = 'down';
 }
 
-var Tile = function(img, name, x, y, deg) {
+var Tile = function(img, name, x, y, deg, flipH) {
 	this.src = img;
 	this.name = name;
 	// This x and y is inclusive (0) when we are looking at the sprite image
@@ -36,6 +36,7 @@ var Tile = function(img, name, x, y, deg) {
 	this.posY;
 
 	this.deg = deg;
+	this.flipH = flipH;
 	this.img = this.processTile(this);
 
 	this.neighbors = [];
@@ -47,16 +48,21 @@ Tile.prototype.processTile = function(el) {
 	offscreenCanvas.width = 32;
 	offscreenCanvas.height = 32;
 
+	var img;
 	if (el.deg != 0) {
 		offscreenCtx.translate(32 / 2, 32 / 2);
 		offscreenCtx.rotate(this.deg * Math.PI/180);
 
 		offscreenCtx.drawImage(this.src, this.x, this.y, 32, 32, -(32 / 2), -(32 / 2), 32, 32);
-		return offscreenCanvas;
 	} else {
 		offscreenCtx.drawImage(this.src, this.x, this.y, 32, 32, 0, 0, 32, 32);
-		return offscreenCanvas;
 	}
+	if (this.flipH) {
+		offscreenCtx.translate(32, 0);
+		offscreenCtx.scale(-1, 1);
+		offscreenCtx.drawImage(offscreenCanvas, 0, 0);
+	}
+	return offscreenCanvas;
 }
 
 var Item = function(img, name, x, y, w, h) {
@@ -95,7 +101,6 @@ var Story = function(context, anim) {
 	this.cc.imageSmoothingEnabled = false;
 
 	this.tiles = [];
-	this.sections = this.getSections();
 	this.pointers = this.getPointers();
 
 	this.animation = anim;
@@ -120,6 +125,15 @@ Story.prototype.loadImage = function() {
 		return new Promise(function(resolve, reject) {
 			alias.tile['grass'] = new Tile(img, 'grass', 34, 226, 0);
 			alias.tile['grass1'] = new Tile(img, 'grass1', 136, 260, 0);
+			alias.tile['grassMildMM'] = new Tile(img, 'grassMildMM', 204, 260, 0);
+			alias.tile['grassMildML'] = new Tile(img, 'grassMildML', 238, 260, 0);
+			alias.tile['grassMildMR'] = new Tile(img, 'grassMildMR', 238, 260, 0, 1);
+			alias.tile['grassMildTL'] = new Tile(img, 'grassMildTL', 238, 226, 0);
+			alias.tile['grassMildTM'] = new Tile(img, 'grassMildTM', 238, 192, 0);
+			alias.tile['grassMildTR'] = new Tile(img, 'grassMildTR', 238, 226, 0, 1);
+			alias.tile['grassMildBL'] = new Tile(img, 'grassMildBL', 272, 226, 0, 1);
+			alias.tile['grassMildBM'] = new Tile(img, 'grassMildBM', 238, 192, 180);
+			alias.tile['grassMildBR'] = new Tile(img, 'grassMildBR', 272, 226, 0);
 			alias.tile['rockTile'] = new Tile(img, 'rockTile', 170, 260, 0);
 			alias.tile['oceanTL'] = new Tile(img, 'oceanTL', 34, 260, 0);
 			alias.tile['oceanTM'] = new Tile(img, 'oceanTM', 102, 192, 0);
@@ -147,19 +161,16 @@ Story.prototype.loadImage = function() {
 	});	
 }
 
-Story.prototype.getSections = function() {
-	// TODO
-}
-
 Story.prototype.getPointers = function() {
 	// Get Kelvien position
-	// var kelvienX = kelvien.element.offset().left;
-	// var ocean = $(".event[data-event='fly']");
-	// var oceanY = ocean.offset().top;
-	// var oceanH = 0;
-	// $.each(ocean, function(i, e) {
-	// 	oceanH += $(e).outerHeight(true);
-	// });
+	this.position = [];
+	this.position['kelvienT'] = $('#kelvien').offset().top;
+	this.position['kelvien'] = $('#kelvien').offset().left;
+	this.position['adjustMostLeft'] = this.position['kelvien'] % 32;
+	this.position['born'] = $(".event:first").offset().top;
+	this.position['ocean'] = $(".event[data-event='fly']:first").offset().top;
+	this.position['ending'] = $(".event:last").offset().top;
+	this.position['endingH'] = $('.event:last').outerHeight(true);
 }
 
 Story.prototype.stopAnimation = function() {
@@ -179,19 +190,59 @@ Story.prototype.animate = function() {
 }
 
 Story.prototype.draw = function() {
+	console.log(this.position);
 	// Draw floor tile from top to bottom
 	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
 		this.tiles[j] = [];
-		for (var i = 0; i < this.cc.canvas.width / 32; i++) {	
+		// 1 is for scrollbar placeholder in mobile devices
+		for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {	
 			var tile = null;
-			// TODO
-			// Logic for what tile to use
-			tile = this.tile['grass'];
-			//
+
+			var adjustedI = i * 32;
+			var adjustedJ = j * 32;
+			adjustedI = adjustedI - (32 - this.position['adjustMostLeft']);
+
+			// ROAD
+			var roadThreshold = 1 * 32;
+			if (adjustedJ > this.position['born'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+				if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
+					||
+					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTM'];
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+						tile = this.tile['grassMildBM'];
+					} else {
+						tile = this.tile['grassMildMM'];
+					}
+				} else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTR'];
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+						tile = this.tile['grassMildBR'];
+					} else {
+						tile = this.tile['grassMildMR'];
+					}
+				} else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTL'];
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+						tile = this.tile['grassMildBL'];
+					} else {
+						tile = this.tile['grassMildML'];
+					}
+				} else {
+					tile = this.tile['grass1'];	
+				}
+			} else {
+				tile = this.tile['grass1'];	
+			}
+
 			// Register top, left, right, and bottom's tile on each other
 			this.tiles[j][i] = this.registerTile(tile, i, j);
 			// Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
-			this.cc.drawImage(tile.img, 0, 0, 32, 32, i * 32, j * 32, 32, 32);
+			// draw width and height are higher than the actual because Safari does not process floating point position (i,j)
+			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 34, 34);
 		}
 	}
 	// TODO
@@ -335,7 +386,7 @@ $(window).on('load', function() {
 
 		if (moving) {
 			if (companion.direction == 'up') {
-				bg = (companion.evenOdd) ? '-134px -460px' : '-222px -460px';
+				bg = (companion.evenOdd) ? '-133px -460px' : '-221px -460px';
 				top = behindChar;
 			} else {
 				bg = (companion.evenOdd) ? '-5px -460px' : '-92px -460px';
@@ -343,10 +394,10 @@ $(window).on('load', function() {
 			}
 		} else {
 			if (companion.direction == 'up') {
-				bg = '-178px -460px';
+				bg = '-177px -460px';
 				top = behindChar;
 			} else {
-				bg = '-48px -460px';
+				bg = '-47px -460px';
 				top = top;
 			}
 		}
@@ -485,16 +536,21 @@ $(window).on('load', function() {
 		var dialogBox = character.element.find('.dialog-box');
 
 		var bg;
+		var anim;
 		switch(type) {
 			case 'love':
-				bg = '0px -424px';
+				bg = '0 -424px';
+				anim = 'love';
 				break;
-			case 'sweat':
-				bg = '-31px -424px';
+			case 'smile':
+				bg = '-64px -424px';
+				anim = 'smile';
 				break;
 		}
+		anim += ' 1s steps(2) infinite';
 		dialogBox.css({
 			'background-position': bg,
+			'animation': anim,
 			'opacity' : 1
 		});
 	}
@@ -614,17 +670,17 @@ $(window).on('load', function() {
 						showDialog(kelvien, 'love');
 						break;
 					case 'sweat':
-						showDialog(kelvien, 'sweat');
 						removeCompanion(kelvien);
 						break;
 					case 'projectKelvien':
 						kelvien.state = 'normal';
-						// showCompanion(kelvien);
+						showCompanion(kelvien);
 						break;
 					case 'contact':
 						chooseMenu('contact');
 					case 'done':
-						// removeCompanion(kelvien);
+						removeCompanion(kelvien);
+						showDialog(kelvien, 'smile');
 						kelvien.state = 'done';
 						changeBg(kelvien, false);
 						break;
@@ -648,7 +704,9 @@ $(window).on('load', function() {
 	}
 
 	function arrangeBg() {	
-		var h = (isFirefox) ? 50 : 0;
+		// Can't just be firefox, enabling for all, must scroll to most bottom for contact though
+		// var h = (isFirefox) ? 50 : 0;
+		var h = 50;
 		cc.canvas.width = $(window).width();
 		cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
 		$('body').height(cc.canvas.height);

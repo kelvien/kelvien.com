@@ -485,7 +485,7 @@ dl.center dd {
 #kelvien {
 	position: absolute;
 	left: 50%;
-	background: url('../media/sprite.png') 0 -150px;
+	background: url('../media/sprite.png') 0px -150px;
 	width: 32px;
 	height: 40px;
 
@@ -497,11 +497,14 @@ dl.center dd {
 .dialog-box {
 	position: absolute;
 	top: -35px;
+	left: 1px;
 	background: url('../media/sprite.png') 0 -424px;
-	width: 30px;
+	width: 32px;
 	height: 24px;
 	text-align: center;
 	padding: 4px 0;
+
+	animation: love 1s steps(2) infinite;
 
 	opacity: 0;
 	transition: opacity 0.2s;
@@ -512,7 +515,7 @@ dl.center dd {
 	top: -36px;
 	left: -2px;
 	
-	background: url('../media/sprite.png') -48px -460px;
+	background: url('../media/sprite.png') -47px -460px;
 	width: 38px;
 	height: 38px;
 	transform: scale(0.8);
@@ -596,6 +599,14 @@ footer {
 	100% { top: -5px; }
 }
 
+@keyframes love {
+	100%  { background-position: -64px -424px; }
+}
+
+@keyframes smile {
+	100%  { background-position: -128px -424px; }
+}
+
 /**/
 html, body {
 	/* Fixed menu will have overflow. does not comply to Bootstrap Grid system*/
@@ -605,6 +616,7 @@ html, body {
 
 div {
 	image-rendering: pixelated;
+	image-rendering: -webkit-pixelated;
 	image-rendering: -moz-crisp-edges;
 	 -ms-interpolation-mode: nearest-neighbor;
 }
