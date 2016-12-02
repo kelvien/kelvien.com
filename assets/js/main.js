@@ -75,20 +75,64 @@ var Item = function(img, name, x, y, w, h) {
 	this.w = w;
 	this.h = h;
 
-	this.posX;
-	this.posY;
+	this.i;
+	this.j;
 
 	this.img = this.processItem(this);
 }
 
-Item.prototype.processItem = function(el) {
+Item.prototype.processItem = function() {
 	var offscreenCanvas = document.createElement('canvas');
 	var offscreenCtx = offscreenCanvas.getContext('2d');
-	offscreenCanvas.width = el.w;
-	offscreenCanvas.height = el.h;
+	offscreenCanvas.width = this.w;
+	offscreenCanvas.height = this.h;
 
-	offscreenCtx.drawImage(this.src, this.x, this.y, el.w, el.h, 0, 0, el.w, el.h);
+	offscreenCtx.drawImage(this.src, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h);
 	return offscreenCanvas;
+}
+
+var Character = function(img, name, w, h, direction, imgJson) {
+	this.src = img;
+	this.name = name;
+
+	this.w = w;
+	this.h = h;
+
+	this.evenOdd;
+	this.direction = direction;
+	this.isMoving;
+
+	this.json = imgJson
+
+	this.img = this.processCharacter(this);
+
+	this.boundary;
+	this.srcPos = {
+		'x': 0,
+		'y': 0
+	};
+	this.destPos = {
+		'x': 0,
+		'y': 0
+	}
+}
+
+Character.prototype.processCharacter = function() {
+	var behavior = (this.isMoving) ? ((this.evenOdd) ? 'left' : 'right') : 'normal';
+	this.x = this.json[this.direction][behavior].x;
+	this.y = this.json[this.direction][behavior].y;
+
+	var offscreenCanvas = document.createElement('canvas');
+	var offscreenCtx = offscreenCanvas.getContext('2d');
+	offscreenCanvas.width = this.w;
+	offscreenCanvas.height = this.h;
+
+	offscreenCtx.drawImage(this.src, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h);
+	return offscreenCanvas;
+}
+
+Character.prototype.move = function(direction) {
+
 }
 
 var Story = function(context, anim) {
@@ -112,9 +156,14 @@ var Story = function(context, anim) {
 		alias.animate();
 	});
 
-	this.items = [];
-	this.characters = [];
+	this.item = [];
+	this.character = [];
+	this.movingCharacter = [];
+
+	this.oceanThreshold = 1 * 32;
+	this.adjustedI = 32 - this.position['adjustMostLeft'];
 }
+
 Story.prototype.loadImage = function() {
 	var alias = this;
 
@@ -156,8 +205,75 @@ Story.prototype.loadImage = function() {
 			alias.tile['roadBL'] = new Tile(img, 'roadBL', 0, 192, 0);
 			alias.tile['roadBM'] = new Tile(img, 'roadBM', 0, 226, 180);
 			alias.tile['roadBR'] = new Tile(img, 'roadBR', 0, 192, -90);
-			alias.tile['home'] = new Item(img, 'home', 620, 372, 160, 128);
-			alias.tile['tallBuiding'] = new Item(img, 'tallBuiding', 782, 23, 222, 476);
+
+			alias.item['home'] = new Item(img, 'home', 620, 372, 160, 128);
+			alias.item['tallBuiding'] = new Item(img, 'tallBuiding', 782, 23, 222, 476);
+
+			var laprasJson = {
+				'up': {
+					'left': {
+						'x': 303,
+						'y': 468
+					},
+					'normal': {
+						'x': 303,
+						'y': 468
+					},
+					'right': {
+						'x': 303,
+						'y': 468
+					}
+				},
+				'down': {
+					'left': {
+						'x': 267,
+						'y': 468
+					},
+					'normal': {
+						'x': 267,
+						'y': 468
+					},
+					'right': {
+						'x': 267,
+						'y': 468
+					}
+				},
+				'left': {
+					'left': {
+						'x': 339,
+						'y': 468
+					},
+					'normal': {
+						'x': 339,
+						'y': 468
+					},
+					'right': {
+						'x': 339,
+						'y': 468
+					}
+				},
+				'right': {
+					'left': {
+						'x': 375,
+						'y': 468
+					},
+					'normal': {
+						'x': 375,
+						'y': 468
+					},
+					'right': {
+						'x': 375,
+						'y': 468
+					}
+				}
+			};
+			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
+			alias.character['mew'] = new Character(img, 'mew', 32, 32, 'left', laprasJson);
+			alias.character['mewtwo'] = new Character(img, 'mewtwo', 32, 32, 'left', laprasJson);
+			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', laprasJson);
+			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', laprasJson);
+			alias.character['tiff'] = new Character(img, 'tiff', 32, 32, 'down', laprasJson);
+			alias.character['nic'] = new Character(img, 'nic', 32, 32, 'down', laprasJson);
 
 			resolve();
 		});
@@ -175,11 +291,23 @@ Story.prototype.getPointers = function() {
 	this.position['kelvien'] = $('#kelvien').offset().left;
 	this.position['adjustMostLeft'] = this.position['kelvien'] % 32;
 	
-	this.position['born'] = $(".event:first").offset().top;
+	this.position['start'] = $("#timeline-gap").offset().top;
 	this.position['ocean'] = $(".event[data-event='fly']:first").offset().top;
 	this.position['oceanH'] = $(".event[data-event='fly']:first").outerHeight(true) + $(".event[data-event='fly']:last").outerHeight(true);
 	this.position['ending'] = $(".event:last").offset().top;
-	this.position['endingH'] = $('.event:last').outerHeight(true);
+	this.position['endingH'] = 64;
+}
+
+Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC) {
+	character.srcPos['i'] = i;
+	character.srcPos['j'] = j;
+
+	character.boundary = boundary;
+	if (movingNPC) {
+		this.movingCharacter.push(this.character['lapras']);
+	}
+
+	this.character.push(this.character['lapras']);
 }
 
 Story.prototype.stopAnimation = function() {
@@ -187,20 +315,91 @@ Story.prototype.stopAnimation = function() {
 }
 
 Story.prototype.animate = function() {
+	var fps = 16;
 	var alias = this;
-	// Ocean - Lapras
-	// Ending - Mewtwo Mew chasing each other
-	// TODO
+
 	if (alias.animation) {
-		requestAnimationFrame(function() {
-			alias.animate();
-		});
+		for (var c = 0; c < this.movingCharacter.length; c++) {
+			var char = this.movingCharacter[c];
+
+			// Draw before and after character tile and update position
+			var tile, tileNeighbor;
+			
+			switch (char.direction) {
+				case 'up': 
+					if (char.srcPos.j <= char.boundary.ja) {
+						char.direction = 'left';
+					} else {
+						char.srcPos.j -= 1/fps;
+					}
+
+					if (char.srcPos.j % 1 == 0) {
+						tile = this.tiles[char.srcPos.j][char.srcPos.i];
+						tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
+					} else {
+						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+					}
+				break;
+				case 'down': 
+					if (char.srcPos.j >= char.boundary.jz) {
+						char.direction = 'right';
+					} else {
+						char.srcPos.j += 1/fps;
+					}
+					if (char.srcPos.j % 1 == 0) {
+						tile = this.tiles[char.srcPos.j][char.srcPos.i];
+						tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
+					} else {
+						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+					}
+				break;
+				case 'left': 
+					if (char.srcPos.i <= char.boundary.ia) {
+						char.direction = 'down';
+					} else {
+						char.srcPos.i -= 1/fps;
+					}
+					if (char.srcPos.i % 1 == 0) {
+						tile = this.tiles[char.srcPos.j][char.srcPos.i];
+						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
+					} else {
+						tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+						tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+					}
+				break;
+				case 'right': 
+					if (char.srcPos.i >= char.boundary.iz) {
+						char.direction = 'up';
+					} else {
+						char.srcPos.i += 1/fps;
+					}
+					if (char.srcPos.i % 1 == 0) {
+						tile = this.tiles[char.srcPos.j][char.srcPos.i];
+						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
+					} else {
+						tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+						tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+					}
+				break;
+			}
+			// Draw src-dest floor
+			this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
+			this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
+
+			// Draw character after movement
+			char.img = char.processCharacter(char);
+			this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
+
+			requestAnimationFrame(function() {
+				alias.animate();
+			});
+		}
 	}
 }
 
 Story.prototype.draw = function() {
-	console.log(this.position);
-
 	// Draw floor tile from top to bottom
 	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
 		this.tiles[j] = [];
@@ -214,10 +413,9 @@ Story.prototype.draw = function() {
 
 			// ROAD
 			var roadThreshold = 1 * 32;
-			var oceanThreshold = 1 * 32;
-			if (adjustedJ >= this.position['born'] && adjustedJ + oceanThreshold <= this.position['ocean']
+			if (adjustedJ >= this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
 				||
-				adjustedJ - oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + this.position['endingH']) {
+				adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + this.position['endingH']) {
 				// Before and after ocean
 				if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
 					||
@@ -248,9 +446,9 @@ Story.prototype.draw = function() {
 				} else {
 					tile = this.tile['grass1'];	
 				}
-			} else if (adjustedJ - oceanThreshold >= this.position['ocean'] && adjustedJ + oceanThreshold <= this.position['ocean'] + this.position['oceanH']) {
+			} else if (adjustedJ - this.oceanThreshold >= this.position['ocean'] && adjustedJ + this.oceanThreshold <= this.position['ocean'] + this.position['oceanH']) {
 				// Ocean 
-				if (adjustedJ - (oceanThreshold + 32) <= this.position['ocean'] && adjustedJ - oceanThreshold >= this.position['ocean']) {
+				if (adjustedJ - (this.oceanThreshold + 32) <= this.position['ocean'] && adjustedJ - this.oceanThreshold >= this.position['ocean']) {
 					if (adjustedI <= 0) {
 						tile = this.tile['oceanTL'];
 					} else if (adjustedI + 32 > this.position['windowW']) {
@@ -258,15 +456,12 @@ Story.prototype.draw = function() {
 					} else {
 						tile = this.tile['oceanTM'];
 					}
-				} else if (adjustedJ + (oceanThreshold + 32) >= this.position['ocean'] + this.position['oceanH']) {
+				} else if (adjustedJ + (this.oceanThreshold + 32) >= this.position['ocean'] + this.position['oceanH']) {
 					if (adjustedI <= 0) {
-						console.log('a');
 						tile = this.tile['oceanBL'];
 					} else if (adjustedI + 32 > this.position['windowW']) {
-						console.log('b');
 						tile = this.tile['oceanBR'];
 					} else {
-						console.log('c');
 						tile = this.tile['oceanBM'];
 					}
 				} else {
@@ -278,6 +473,9 @@ Story.prototype.draw = function() {
 						tile = this.tile['oceanMM'];
 					}
 				}
+			} else if (false) {
+				// Ending
+				tile = this.tile['grass1'];	
 			} else {
 				tile = this.tile['grass1'];	
 			}
@@ -290,13 +488,39 @@ Story.prototype.draw = function() {
 		}
 	}
 	// TODO
-	// Items
+	// Items (tress surround, houses)
+	//
+
+	// Characters
+	var char = this.character['lapras'];
+	var laprasI = getIOrJ(this.cc.canvas.width / 2);
+	var laprasJ = getIOrJ(this.position['ocean'] + (3 * this.oceanThreshold));
+	var laprasBoundary = {};
+	laprasBoundary.ia = 1;
+	laprasBoundary.iz = getIOrJ(this.position['windowW'] - this.oceanThreshold);
+	laprasBoundary.ja = getIOrJ(this.position['ocean'] + 3 * this.oceanThreshold);
+	laprasBoundary.jz = getIOrJ(this.position['ocean'] + this.position['oceanH'] -  2 * this.oceanThreshold);
+
+	this.insertCharacter(char, laprasI, laprasJ, laprasBoundary, true);
+
+	// Mew, mewtwo
+	
+}
+
+function getIOrJ(t) {
+	var i = -1;
+	var count = 0;
+	while(count < t) {
+		i++;
+		count += 32;
+	}
+	return i;
 }
 
 Story.prototype.registerTile = function(tile, i, j) {
 	var tempTile = $.extend(true, {}, tile);
-	tempTile.x = i;
-	tempTile.y = j;
+	tempTile.i = i;
+	tempTile.j = j;
 
 	if (j != 0) {
 		this.tiles[j-1][i].neighbors.bottom = tempTile;
@@ -337,16 +561,14 @@ $(window).on('load', function() {
 		var duration = 1000;
 		$('#menu-container li').on('click', function() {
 
+			var extraAfterTrigger = 2;
 			var to = 0;
 			switch($(this).data('menu')) {
 				case 'about':
 					to = 0;
 					break;
 				case 'story':
-					to = $(".event:first").offset().top + parseInt($(".event:first").css('padding-top')) - ($(window).height() / 2);
-					break;
-				case 'skills':
-					to = $(".event[data-event='skills']").offset().top - ($(window).height() / 2);
+					to = $(".event:first").offset().top - ($(window).height() / 2) + extraAfterTrigger;
 					break;
 				case 'contact':
 					to = $('body').height();
@@ -608,7 +830,7 @@ $(window).on('load', function() {
 
 	function arrangeKelvien() {
 		var scene = new ScrollMagic.Scene({
-			triggerElement: '.event:first',
+			triggerElement: '#timeline-gap',
 			duration: $('#timeline').height() - $('.event:last').outerHeight(true), 
 			reverse: true
 	    })
@@ -755,7 +977,7 @@ $(window).on('load', function() {
 		cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
 		$('body').height(cc.canvas.height);
 
-		var story = new Story(cc, false); // set to true for start animation
+		var story = new Story(cc, true);
 	}
 
 	function addScroll() {

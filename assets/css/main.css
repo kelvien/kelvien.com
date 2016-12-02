@@ -316,6 +316,10 @@ dl.center dd {
 	height: 100%;
 }
 
+#timeline-gap {
+	height: 50px;
+}
+
 #timeline-line {
 	position: absolute;
 	left: 50%;
@@ -338,9 +342,6 @@ dl.center dd {
 	transition: opacity 0.5s;
 }
 
-#event-first {
-	padding-top: 20px;
-}
 
 .project-tags {
 	padding-top: 10px;
@@ -584,7 +585,7 @@ footer {
 	z-index: -1;
          
     opacity: 0;
-    transition: opacity 1s;
+    transition: opacity 0.5s;
 }
 
 #test {
@@ -637,6 +638,10 @@ ul li {
 	text-align: right;
 }
 
+span.email {
+	letter-spacing: 1px;
+}
+
 /* Bootstrap XS down */
 @media (max-width: 576px) {
 	#timeline-line {
@@ -649,6 +654,7 @@ ul li {
 
 	.event {
 		max-width: 100%;
+		padding-top: 10px;
 		padding-left: 45px;
 	}
 
