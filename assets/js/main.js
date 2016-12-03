@@ -37,7 +37,8 @@ var Tile = function(img, name, x, y, deg, flipH) {
 
 	this.deg = deg;
 	this.flipH = flipH;
-	this.img = this.processTile(this);
+	this.processedTile = this.processTile(this);
+	this.img = this.processedTile;
 
 	this.neighbors = [];
 }
@@ -78,7 +79,8 @@ var Item = function(img, name, x, y, w, h) {
 	this.i;
 	this.j;
 
-	this.img = this.processItem(this);
+	this.processedItem = this.processItem(this);
+	this.img = this.processItem;
 }
 
 Item.prototype.processItem = function() {
@@ -104,7 +106,8 @@ var Character = function(img, name, w, h, direction, imgJson) {
 
 	this.json = imgJson
 
-	this.img = this.processCharacter(this);
+	this.processedCharacter = this.processCharacter(this);
+	this.img = this.processedCharacter;
 
 	this.boundary;
 	this.srcPos = {
@@ -131,9 +134,16 @@ Character.prototype.processCharacter = function() {
 	return offscreenCanvas;
 }
 
-Character.prototype.move = function(direction) {
+// RAF Fallback handler
+window.requestAnimationFrame = window.requestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || function(f){return setTimeout(f, 1000/60)}
+window.cancelAnimationFrame = window.cancelAnimationFrame
+    || window.mozCancelAnimationFrame
+    || function(requestID){clearTimeout(requestID)}
 
-}
 
 var Story = function(context, anim) {
 	var alias = this;
@@ -153,7 +163,7 @@ var Story = function(context, anim) {
 	this.tile = [];
 	this.loadImage().then(function() {
 		alias.draw();
-		alias.animate();
+		alias.animateLapras();
 	});
 
 	this.item = [];
@@ -268,7 +278,65 @@ Story.prototype.loadImage = function() {
 				}
 			};
 			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
-			alias.character['mew'] = new Character(img, 'mew', 32, 32, 'left', laprasJson);
+			var mewJson = {
+				'up': {
+					'left': {
+						'x': 303,
+						'y': 468
+					},
+					'normal': {
+						'x': 303,
+						'y': 468
+					},
+					'right': {
+						'x': 303,
+						'y': 468
+					}
+				},
+				'down': {
+					'left': {
+						'x': 267,
+						'y': 468
+					},
+					'normal': {
+						'x': 515,
+						'y': 381
+					},
+					'right': {
+						'x': 267,
+						'y': 468
+					}
+				},
+				'left': {
+					'left': {
+						'x': 339,
+						'y': 468
+					},
+					'normal': {
+						'x': 339,
+						'y': 468
+					},
+					'right': {
+						'x': 339,
+						'y': 468
+					}
+				},
+				'right': {
+					'left': {
+						'x': 375,
+						'y': 468
+					},
+					'normal': {
+						'x': 515,
+						'y': 381
+					},
+					'right': {
+						'x': 375,
+						'y': 468
+					}
+				}
+			}
+			alias.character['mew'] = new Character(img, 'mew', 24, 64, 'right', mewJson);
 			alias.character['mewtwo'] = new Character(img, 'mewtwo', 32, 32, 'left', laprasJson);
 			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', laprasJson);
 			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', laprasJson);
@@ -304,99 +372,96 @@ Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC)
 
 	character.boundary = boundary;
 	if (movingNPC) {
-		this.movingCharacter.push(this.character['lapras']);
+		this.movingCharacter[character.name] = character;
 	}
 
-	this.character.push(this.character['lapras']);
+	this.character.push(character);
 }
 
 Story.prototype.stopAnimation = function() {
 	this.animation = false;
 }
 
-Story.prototype.animate = function() {
+Story.prototype.animateLapras = function() {
 	var fps = 16;
 	var alias = this;
 
-	if (alias.animation) {
-		for (var c = 0; c < this.movingCharacter.length; c++) {
-			var char = this.movingCharacter[c];
+	var char = this.movingCharacter['lapras'];
 
-			// Draw before and after character tile and update position
-			var tile, tileNeighbor;
-			
-			switch (char.direction) {
-				case 'up': 
-					if (char.srcPos.j <= char.boundary.ja) {
-						char.direction = 'left';
-					} else {
-						char.srcPos.j -= 1/fps;
-					}
-
-					if (char.srcPos.j % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
-					} else {
-						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
-						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
-					}
-				break;
-				case 'down': 
-					if (char.srcPos.j >= char.boundary.jz) {
-						char.direction = 'right';
-					} else {
-						char.srcPos.j += 1/fps;
-					}
-					if (char.srcPos.j % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
-					} else {
-						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
-						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
-					}
-				break;
-				case 'left': 
-					if (char.srcPos.i <= char.boundary.ia) {
-						char.direction = 'down';
-					} else {
-						char.srcPos.i -= 1/fps;
-					}
-					if (char.srcPos.i % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
-					} else {
-						tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
-						tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
-					}
-				break;
-				case 'right': 
-					if (char.srcPos.i >= char.boundary.iz) {
-						char.direction = 'up';
-					} else {
-						char.srcPos.i += 1/fps;
-					}
-					if (char.srcPos.i % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
-					} else {
-						tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
-						tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
-					}
-				break;
+	// Draw before and after character tile and update position
+	var tile, tileNeighbor;
+	
+	switch (char.direction) {
+		case 'up': 
+			if (char.srcPos.j <= char.boundary.ja) {
+				char.direction = 'left';
+			} else {
+				char.srcPos.j -= 1/fps;
 			}
-			// Draw src-dest floor
-			this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
-			this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
 
-			// Draw character after movement
-			char.img = char.processCharacter(char);
-			this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
-
-			requestAnimationFrame(function() {
-				alias.animate();
-			});
-		}
+			if (char.srcPos.j % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
+			} else {
+				tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'down': 
+			if (char.srcPos.j >= char.boundary.jz) {
+				char.direction = 'right';
+			} else {
+				char.srcPos.j += 1/fps;
+			}
+			if (char.srcPos.j % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
+			} else {
+				tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'left': 
+			if (char.srcPos.i <= char.boundary.ia) {
+				char.direction = 'down';
+			} else {
+				char.srcPos.i -= 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
+			} else {
+				tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
+		case 'right': 
+			if (char.srcPos.i >= char.boundary.iz) {
+				char.direction = 'up';
+			} else {
+				char.srcPos.i += 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
+			} else {
+				tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
 	}
+	// Draw src-dest floor
+	this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
+	this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
+
+	// Draw character after movement
+	char.img = char.processCharacter(char);
+	this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
+
+	requestAnimationFrame(function() {
+		alias.animateLapras();
+	});
+
 }
 
 Story.prototype.draw = function() {
@@ -409,7 +474,7 @@ Story.prototype.draw = function() {
 
 			var adjustedI = i * 32;
 			var adjustedJ = j * 32;
-			adjustedI = adjustedI - (32 - this.position['adjustMostLeft']);
+			adjustedI = adjustedI - this.adjustedI;
 
 			// ROAD
 			var roadThreshold = 1 * 32;
