@@ -121,9 +121,11 @@ var Character = function(img, name, w, h, direction, imgJson) {
 }
 
 Character.prototype.processCharacter = function() {
-	var behavior = (this.isMoving) ? ((this.evenOdd) ? 'left' : 'right') : 'normal';
-	this.x = this.json[this.direction][behavior].x;
-	this.y = this.json[this.direction][behavior].y;
+	if (this.json) {
+		var behavior = (this.isMoving) ? ((this.evenOdd) ? 'left' : 'right') : 'normal';
+		this.x = this.json[this.direction][behavior].x;
+		this.y = this.json[this.direction][behavior].y;
+	}
 
 	var offscreenCanvas = document.createElement('canvas');
 	var offscreenCtx = offscreenCanvas.getContext('2d');
@@ -278,70 +280,11 @@ Story.prototype.loadImage = function() {
 				}
 			};
 			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
-			var mewJson = {
-				'up': {
-					'left': {
-						'x': 303,
-						'y': 468
-					},
-					'normal': {
-						'x': 303,
-						'y': 468
-					},
-					'right': {
-						'x': 303,
-						'y': 468
-					}
-				},
-				'down': {
-					'left': {
-						'x': 267,
-						'y': 468
-					},
-					'normal': {
-						'x': 515,
-						'y': 381
-					},
-					'right': {
-						'x': 267,
-						'y': 468
-					}
-				},
-				'left': {
-					'left': {
-						'x': 339,
-						'y': 468
-					},
-					'normal': {
-						'x': 339,
-						'y': 468
-					},
-					'right': {
-						'x': 339,
-						'y': 468
-					}
-				},
-				'right': {
-					'left': {
-						'x': 375,
-						'y': 468
-					},
-					'normal': {
-						'x': 515,
-						'y': 381
-					},
-					'right': {
-						'x': 375,
-						'y': 468
-					}
-				}
-			}
-			alias.character['mew'] = new Character(img, 'mew', 24, 64, 'right', mewJson);
-			alias.character['mewtwo'] = new Character(img, 'mewtwo', 32, 32, 'left', laprasJson);
-			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', laprasJson);
-			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', laprasJson);
-			alias.character['tiff'] = new Character(img, 'tiff', 32, 32, 'down', laprasJson);
-			alias.character['nic'] = new Character(img, 'nic', 32, 32, 'down', laprasJson);
+
+			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', null);
+			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', null);
+			alias.character['tiff'] = new Character(img, 'tiff', 32, 32, 'down', null);
+			alias.character['nic'] = new Character(img, 'nic', 32, 32, 'down', null);
 
 			resolve();
 		});
@@ -353,7 +296,7 @@ Story.prototype.getPointers = function() {
 	this.position = [];
 
 	this.position['windowW'] = $(window).width();
-	this.position['windowH'] = $(window).height();
+	this.position['canvasH'] = $('#canvas').height();
 
 	this.position['kelvienT'] = $('#kelvien').offset().top;
 	this.position['kelvien'] = $('#kelvien').offset().left;
@@ -363,7 +306,7 @@ Story.prototype.getPointers = function() {
 	this.position['ocean'] = $(".event[data-event='fly']:first").offset().top;
 	this.position['oceanH'] = $(".event[data-event='fly']:first").outerHeight(true) + $(".event[data-event='fly']:last").outerHeight(true);
 	this.position['ending'] = $(".event:last").offset().top;
-	this.position['endingH'] = 64;
+	this.position['endingH'] = $(".event:last").outerHeight(true);
 }
 
 Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC) {
@@ -480,14 +423,14 @@ Story.prototype.draw = function() {
 			var roadThreshold = 1 * 32;
 			if (adjustedJ >= this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
 				||
-				adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + this.position['endingH']) {
+				adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + 64) {
 				// Before and after ocean
 				if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
 					||
 					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTM'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBM'];
 					} else {
 						tile = this.tile['grassMildMM'];
@@ -495,7 +438,7 @@ Story.prototype.draw = function() {
 				} else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTR'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBR'];
 					} else {
 						tile = this.tile['grassMildMR'];
@@ -503,7 +446,7 @@ Story.prototype.draw = function() {
 				} else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTL'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + this.position['endingH'] && adjustedJ < this.position['ending'] + this.position['endingH']) {
+					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBL'];
 					} else {
 						tile = this.tile['grassMildML'];
@@ -568,8 +511,7 @@ Story.prototype.draw = function() {
 
 	this.insertCharacter(char, laprasI, laprasJ, laprasBoundary, true);
 
-	// Mew, mewtwo
-	
+	//
 }
 
 function getIOrJ(t) {
