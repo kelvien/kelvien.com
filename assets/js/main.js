@@ -35,9 +35,13 @@ var Tile = function(img, name, x, y, deg, flipH) {
 	this.posX;
 	this.posY;
 
+	this.w = 32;
+	this.h = 32;
+
 	this.deg = deg;
 	this.flipH = flipH;
-	this.img = this.processTile(this);
+	this.processedTile = this.processTile(this);
+	this.img = this.processedTile;
 
 	this.neighbors = [];
 }
@@ -78,7 +82,8 @@ var Item = function(img, name, x, y, w, h) {
 	this.i;
 	this.j;
 
-	this.img = this.processItem(this);
+	this.processedItem = this.processItem(this);
+	this.img = this.processItem;
 }
 
 Item.prototype.processItem = function() {
@@ -104,7 +109,8 @@ var Character = function(img, name, w, h, direction, imgJson) {
 
 	this.json = imgJson
 
-	this.img = this.processCharacter(this);
+	this.processedCharacter = this.processCharacter(this);
+	this.img = this.processedCharacter;
 
 	this.boundary;
 	this.srcPos = {
@@ -135,25 +141,27 @@ Character.prototype.move = function(direction) {
 
 }
 
-var Story = function(context, anim) {
+var Story = function(canvas, renderer, stage) {
 	var alias = this;
 
-	this.cc = context;
-	this.cc.webkitImageSmoothingEnabled = false;
-	this.cc.mozImageSmoothingEnabled = false;
-	this.cc.msImageSmoothingEnabled = false;
-	this.cc.imageSmoothingEnabled = false;
+	this.c = canvas;
+	this.r = renderer;
+	this.s = stage;
+	// this.cc = context;
+	// this.cc.webkitImageSmoothingEnabled = false;
+	// this.cc.mozImageSmoothingEnabled = false;
+	// this.cc.msImageSmoothingEnabled = false;
+	// this.cc.imageSmoothingEnabled = false;
 
 	this.tiles = [];
 	this.pointers = this.getPointers();
-
-	this.animation = anim;
 
 	/// TILES ///
 	this.tile = [];
 	this.loadImage().then(function() {
 		alias.draw();
-		alias.animate();
+		animateLapras();
+		// alias.animateMewAndMewtwo();
 	});
 
 	this.item = [];
@@ -163,6 +171,16 @@ var Story = function(context, anim) {
 	this.oceanThreshold = 1 * 32;
 	this.adjustedI = 32 - this.position['adjustMostLeft'];
 }
+
+// RAF Fallback handler
+window.requestAnimationFrame = window.requestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || function(f){return setTimeout(f, 1000/60)}
+window.cancelAnimationFrame = window.cancelAnimationFrame
+    || window.mozCancelAnimationFrame
+    || function(requestID){clearTimeout(requestID)}
 
 Story.prototype.loadImage = function() {
 	var alias = this;
@@ -268,7 +286,65 @@ Story.prototype.loadImage = function() {
 				}
 			};
 			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
-			alias.character['mew'] = new Character(img, 'mew', 32, 32, 'left', laprasJson);
+			var mewJson = {
+				'up': {
+					'left': {
+						'x': 303,
+						'y': 468
+					},
+					'normal': {
+						'x': 303,
+						'y': 468
+					},
+					'right': {
+						'x': 303,
+						'y': 468
+					}
+				},
+				'down': {
+					'left': {
+						'x': 267,
+						'y': 468
+					},
+					'normal': {
+						'x': 515,
+						'y': 381
+					},
+					'right': {
+						'x': 267,
+						'y': 468
+					}
+				},
+				'left': {
+					'left': {
+						'x': 339,
+						'y': 468
+					},
+					'normal': {
+						'x': 339,
+						'y': 468
+					},
+					'right': {
+						'x': 339,
+						'y': 468
+					}
+				},
+				'right': {
+					'left': {
+						'x': 375,
+						'y': 468
+					},
+					'normal': {
+						'x': 515,
+						'y': 381
+					},
+					'right': {
+						'x': 375,
+						'y': 468
+					}
+				}
+			}
+			alias.character['mew'] = new Character(img, 'mew', 24, 64, 'right', mewJson);
 			alias.character['mewtwo'] = new Character(img, 'mewtwo', 32, 32, 'left', laprasJson);
 			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', laprasJson);
 			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', laprasJson);
@@ -304,112 +380,204 @@ Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC)
 
 	character.boundary = boundary;
 	if (movingNPC) {
-		this.movingCharacter.push(this.character['lapras']);
+		this.movingCharacter[character.name] = character;
 	}
 
-	this.character.push(this.character['lapras']);
+	this.character.push(character);
 }
 
 Story.prototype.stopAnimation = function() {
 	this.animation = false;
 }
 
-Story.prototype.animate = function() {
+var fps = 16;
+animateLapras = function() {
+	// var char = this.movingCharacter['lapras'];
+	var char = story.movingCharacter['lapras'];
+
+	// Draw before and after character tile and update position
+	var tile, tileNeighbor;
+	
+	switch (char.direction) {
+		case 'up': 
+			if (char.srcPos.j <= char.boundary.ja) {
+				char.direction = 'left';
+				char.img = char.processCharacter(char);
+			} else {
+				char.srcPos.j -= 1/fps;
+			}
+
+			if (char.srcPos.j % 1 == 0) {
+				tile = story.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = story.tiles[char.srcPos.j + 1][char.srcPos.i];
+			} else {
+				tile = story.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = story.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'down': 
+			if (char.srcPos.j >= char.boundary.jz) {
+				char.direction = 'right';
+				char.img = char.processCharacter(char);
+			} else {
+				char.srcPos.j += 1/fps;
+			}
+			if (char.srcPos.j % 1 == 0) {
+				tile = story.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = story.tiles[char.srcPos.j - 1][char.srcPos.i];
+			} else {
+				tile = story.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = story.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'left': 
+			if (char.srcPos.i <= char.boundary.ia) {
+				char.direction = 'down';
+				char.img = char.processCharacter(char);
+			} else {
+				char.srcPos.i -= 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = story.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = story.tiles[char.srcPos.j][char.srcPos.i + 1];
+			} else {
+				tileNeighbor = story.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tile = story.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
+		case 'right': 
+			if (char.srcPos.i >= char.boundary.iz) {
+				char.direction = 'up';
+				char.img = char.processCharacter(char);
+			} else {
+				char.srcPos.i += 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = story.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = story.tiles[char.srcPos.j][char.srcPos.i - 1];
+			} else {
+				tile = story.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tileNeighbor = story.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
+	}
+	// Draw src-dest floor
+	// this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
+	// this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
+
+	// Draw character after movement
+	// this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
+	var a = PIXI.Texture.fromCanvas(char.img);
+	var t = new PIXI.Sprite(a);
+	t.x = (char.srcPos.i * 32) - story.adjustedI;
+	t.y = char.srcPos.j * 32;
+	story.s.addChild(t);
+	
+	story.r.render(story.s);
+
+	var alias = this;
+	requestAnimationFrame(animateLapras);
+
+	// var alias = this;
+	// requestAnimationFrame(function() {
+	// 	alias.animateLapras();
+	// });
+}
+
+Story.prototype.animateMewAndMewtwo = function() {
 	var fps = 16;
 	var alias = this;
 
 	if (alias.animation) {
-		for (var c = 0; c < this.movingCharacter.length; c++) {
-			var char = this.movingCharacter[c];
+		var char = this.movingCharacter['mew'];
 
-			// Draw before and after character tile and update position
-			var tile, tileNeighbor;
-			
-			switch (char.direction) {
-				case 'up': 
-					if (char.srcPos.j <= char.boundary.ja) {
-						char.direction = 'left';
-					} else {
-						char.srcPos.j -= 1/fps;
-					}
+		// Draw before and after character tile and update position
+		var tile, tileNeighbor;
+		
+		switch (char.direction) {
+			case 'up': 
+				if (char.srcPos.j <= char.boundary.ja) {
+					char.direction = 'left';
+				} else {
+					char.srcPos.j -= 1/fps;
+				}
 
-					if (char.srcPos.j % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
-					} else {
-						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
-						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
-					}
-				break;
-				case 'down': 
-					if (char.srcPos.j >= char.boundary.jz) {
-						char.direction = 'right';
-					} else {
-						char.srcPos.j += 1/fps;
-					}
-					if (char.srcPos.j % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
-					} else {
-						tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
-						tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
-					}
-				break;
-				case 'left': 
-					if (char.srcPos.i <= char.boundary.ia) {
-						char.direction = 'down';
-					} else {
-						char.srcPos.i -= 1/fps;
-					}
-					if (char.srcPos.i % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
-					} else {
-						tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
-						tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
-					}
-				break;
-				case 'right': 
-					if (char.srcPos.i >= char.boundary.iz) {
-						char.direction = 'up';
-					} else {
-						char.srcPos.i += 1/fps;
-					}
-					if (char.srcPos.i % 1 == 0) {
-						tile = this.tiles[char.srcPos.j][char.srcPos.i];
-						tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
-					} else {
-						tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
-						tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
-					}
-				break;
-			}
-			// Draw src-dest floor
-			this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
-			this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
-
-			// Draw character after movement
-			char.img = char.processCharacter(char);
-			this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
-
-			requestAnimationFrame(function() {
-				alias.animate();
-			});
+				if (char.srcPos.j % 1 == 0) {
+					tile = this.tiles[char.srcPos.j][char.srcPos.i];
+					tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
+				} else {
+					tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+					tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+				}
+			break;
+			case 'down': 
+				if (char.srcPos.j >= char.boundary.jz) {
+					char.direction = 'right';
+				} else {
+					char.srcPos.j += 1/fps;
+				}
+				if (char.srcPos.j % 1 == 0) {
+					tile = this.tiles[char.srcPos.j][char.srcPos.i];
+					tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
+				} else {
+					tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+					tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+				}
+			break;
+			case 'left': 
+				if (char.srcPos.i <= char.boundary.ia) {
+					char.direction = 'down';
+				} else {
+					char.srcPos.i -= 1/fps;
+				}
+				if (char.srcPos.i % 1 == 0) {
+					tile = this.tiles[char.srcPos.j][char.srcPos.i];
+					tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
+				} else {
+					tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+					tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+				}
+			break;
+			case 'right': 
+				if (char.srcPos.i >= char.boundary.iz) {
+					char.direction = 'up';
+				} else {
+					char.srcPos.i += 1/fps;
+				}
+				if (char.srcPos.i % 1 == 0) {
+					tile = this.tiles[char.srcPos.j][char.srcPos.i];
+					tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
+				} else {
+					tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+					tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+				}
+			break;
 		}
+		// Draw src-dest floor
+		this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
+		this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
+
+		// Draw character after movement
+		char.img = char.processCharacter(char);
+		this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
+
+		requestAnimationFrame(function() {
+			alias.animateMewAndMewtwo();
+		});
 	}
 }
 
 Story.prototype.draw = function() {
 	// Draw floor tile from top to bottom
-	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
+	for (var j = 0; j < this.c.height / 32; j++) {
 		this.tiles[j] = [];
 		// 1 is for scrollbar placeholder in mobile devices
-		for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {	
+		for (var i = 0; i < (this.c.width / 32) + 1; i++) {	
 			var tile = null;
 
 			var adjustedI = i * 32;
 			var adjustedJ = j * 32;
-			adjustedI = adjustedI - (32 - this.position['adjustMostLeft']);
+			adjustedI = adjustedI - this.adjustedI;
 
 			// ROAD
 			var roadThreshold = 1 * 32;
@@ -484,16 +652,27 @@ Story.prototype.draw = function() {
 			this.tiles[j][i] = this.registerTile(tile, i, j);
 			// Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
 			// draw width and height are higher than the actual because Safari does not process floating point position (i,j)
-			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
+			// this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
+
+			// var a = PIXI.TextureCache['assets/media/sprite.png'];
+			// var r = new PIXI.Rectangle(tile.x, tile.y, tile.w, tile.h);
+			// a.frame = r;
+			var a = PIXI.Texture.fromCanvas(tile.img);
+			var t = new PIXI.Sprite(a);
+			t.x = adjustedI;
+			t.y = adjustedJ;
+			this.s.addChild(t);
+			
 		}
 	}
+	this.r.render(this.s);
 	// TODO
 	// Items (tress surround, houses)
 	//
 
 	// Characters
 	var char = this.character['lapras'];
-	var laprasI = getIOrJ(this.cc.canvas.width / 2);
+	var laprasI = getIOrJ(this.c.width / 2);
 	var laprasJ = getIOrJ(this.position['ocean'] + (3 * this.oceanThreshold));
 	var laprasBoundary = {};
 	laprasBoundary.ia = 1;
@@ -503,8 +682,9 @@ Story.prototype.draw = function() {
 
 	this.insertCharacter(char, laprasI, laprasJ, laprasBoundary, true);
 
-	// Mew, mewtwo
-	
+	// // Mew, mewtwo
+	// char = this.character['mew'];
+	// this.insertCharacter(char, laprasI - 1, laprasJ, laprasBoundary, true);
 }
 
 function getIOrJ(t) {
@@ -555,7 +735,7 @@ $(window).on('load', function() {
 	var midWindow = $(window).height() / 2;
 	var kelvien = new Kelvien();
 	var c = $('#canvas');
-	var cc = c[0].getContext('2d');
+	// var cc = c[0].getContext('2d');
 
 	function registerMenu() {
 		var duration = 1000;
@@ -971,13 +1151,32 @@ $(window).on('load', function() {
 
 	function arrangeBg() {	
 		// Can't just be firefox, enabling for all, must scroll to most bottom for contact though
-		// var h = (isFirefox) ? 50 : 0;
 		var h = 50;
-		cc.canvas.width = $(window).width();
-		cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
-		$('body').height(cc.canvas.height);
+		// cc.canvas.width = $(window).width();
+		// cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
+		// $('body').height(cc.canvas.height);
 
-		var story = new Story(cc, true);
+		//Create the renderer
+		var renderer = PIXI.autoDetectRenderer($(window).width(), $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true), {
+			view: c[0]
+		});
+
+		//Add the canvas to the HTML document
+		// document.body.appendChild(renderer.view);
+		$('body').height(c[0].height);
+		//Create a container object called the `stage`
+		var stage = new PIXI.Container();
+
+		//Tell the `renderer` to `render` the `stage`
+		renderer.render(stage);
+
+		PIXI.loader
+		.add([
+			'assets/media/sprite.png'
+		])
+		.load(function() {
+			story = new Story(c[0], renderer, stage);
+		});
 	}
 
 	function addScroll() {
