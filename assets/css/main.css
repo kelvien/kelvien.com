@@ -1,5 +1,7 @@
 #main {
 	position: relative;
+
+	transition: opacity 0.5s;
 }
 
 #logo-container {
@@ -151,17 +153,6 @@
 	background-size: cover;
 }
 
-#profl-figure {
-	position: absolute;
-	background: url('../media/sprite.png') 0px 0px;
-	width: 32px;
-	height: 55px;
-	bottom: 10px;
-	right: 2px;
-	z-index: 0;
-	transform: scale(1.3);
-}
-
 #bio {
 	margin-top: 20px;
 	text-align: center;
@@ -232,7 +223,7 @@ dl.center dd {
 }
 
 .skill-pb-unselected {
-	background: url('../media/sprite.png') -1427px 0px;
+	background: url('../media/sprite.png') -1014px 0px;
 	position: absolute;
     width: 40px;
     height: 40px;
@@ -242,7 +233,7 @@ dl.center dd {
 }
 
 .skill-pb-selected {
-	background: url('../media/sprite.png') -1314px 0px;
+	background: url('../media/sprite.png') -1014px 0px;
 	position: absolute;
 	width: 40px;
     height: 48px;
@@ -252,7 +243,7 @@ dl.center dd {
 }
 
 .skill-indicator {
-	background: url('../media/sprite.png') -2232px 0px;
+	background: url('../media/sprite.png') -2432px 0px;
 	width: 140px;
 	height: 14px;
 	float: right;
@@ -263,7 +254,7 @@ dl.center dd {
 	background-image: url('../media/skill-bottom-bg.png');
 	color: #373A3C;
 	overflow: hidden;
-	/*max-height: 0px;*/
+
 	max-height: 400px;
 	transition: max-height 0.5s;
 
@@ -525,13 +516,23 @@ dl.center dd {
 	transition: opacity 0.5s;
 }
 
-.show {
-	opacity: 1;
-	transition: opacity 0.5s;
+.contact {
+	width: 100%;
 }
 
-.hide {
+#canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+         
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.loading {
 	opacity: 0;
+
 	transition: opacity 0.5s;
 }
 
@@ -541,57 +542,7 @@ footer {
 	bottom: 0;
 	text-align: center;
 	padding: 5px;
-}
-
-#kelvien-contact-info div {
-	display: inline-block;
-}
-
-.male-icon {
-	position: relative;
-	top: 2px;
-	display: inline-block;
-	background: url('../media/sprite.png') -86px -93px;
-	width: 12px;
-	height: 16px;
-}
-
-.event-left #kelvien-contact-info {
-	background: url('../media/sprite.png') -292px 0px;
-	width: 200px;
-	height: 58px;
-	padding: 5px 15px;
-}
-
-.event-right #kelvien-contact-info {
-	background: url('../media/sprite.png') -495px 0px;
-	width: 200px;
-	height: 58px;
-	padding: 5px 25px;
-}
-
-.contact {
-	width: 100%;
-}
-
-#contact-method {
-	margin-top: 10px;
-}
-
-#canvas {
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: -1;
-         
-    opacity: 1;
-    transition: opacity 0.5s;
-}
-
-#test {
-	background: url('../media/sprite.png') 0px 0px;
-	width: 100px;
-	height: 100px;
+	font-weight: bolder;
 }
 
 @keyframes signToScroll {
@@ -609,10 +560,13 @@ footer {
 }
 
 /**/
+
 html, body {
 	/* Fixed menu will have overflow. does not comply to Bootstrap Grid system*/
 	position: relative;
 	overflow-x: hidden;
+
+	transition: opacity 0.5s;
 }
 
 div {
@@ -626,20 +580,17 @@ ul li {
 	line-height: 1.2;
 }
 
-.pull-left {
-	float: left;
-}
-
-.pull-right {
-	float: right;
-}
-
 .text-right {
 	text-align: right;
 }
 
 span.email {
 	letter-spacing: 1px;
+}
+
+.gap {
+	width: 100%;
+	margin: 5px;
 }
 
 /* Bootstrap XS down */

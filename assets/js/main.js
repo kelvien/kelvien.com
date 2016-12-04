@@ -1,3 +1,10 @@
+/*
+* Force HTTPS
+*/
+if(window.location.protocol != 'https:'){
+    window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var Kelvien = function() {
@@ -80,7 +87,7 @@ var Item = function(img, name, x, y, w, h) {
 	this.j;
 
 	this.processedItem = this.processItem(this);
-	this.img = this.processItem;
+	this.img = this.processedItem;
 }
 
 Item.prototype.processItem = function() {
@@ -189,6 +196,7 @@ Story.prototype.loadImage = function() {
 		return new Promise(function(resolve, reject) {
 			alias.tile['grass'] = new Tile(img, 'grass', 34, 226, 0);
 			alias.tile['grass1'] = new Tile(img, 'grass1', 136, 260, 0);
+			alias.tile['flower'] = new Tile(img, 'flower', 204, 192, 0);
 			alias.tile['grassMildMM'] = new Tile(img, 'grassMildMM', 204, 260, 0);
 			alias.tile['grassMildML'] = new Tile(img, 'grassMildML', 238, 260, 0);
 			alias.tile['grassMildMR'] = new Tile(img, 'grassMildMR', 238, 260, 0, 1);
@@ -218,8 +226,9 @@ Story.prototype.loadImage = function() {
 			alias.tile['roadBM'] = new Tile(img, 'roadBM', 0, 226, 180);
 			alias.tile['roadBR'] = new Tile(img, 'roadBR', 0, 192, -90);
 
+			alias.item['tree'] = new Item(img, 'tree', 0, 56, 64, 94);
 			alias.item['home'] = new Item(img, 'home', 620, 372, 160, 128);
-			alias.item['tallBuiding'] = new Item(img, 'tallBuiding', 782, 23, 222, 476);
+
 
 			var laprasJson = {
 				'up': {
@@ -281,10 +290,10 @@ Story.prototype.loadImage = function() {
 			};
 			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
 
-			alias.character['dad'] = new Character(img, 'dad', 32, 32,'down', null);
-			alias.character['mom'] = new Character(img, 'mom', 32, 32, 'down', null);
-			alias.character['tiff'] = new Character(img, 'tiff', 32, 32, 'down', null);
-			alias.character['nic'] = new Character(img, 'nic', 32, 32, 'down', null);
+			alias.character['dad'] = new Character(img, 'dad', 32, 40, 'down', {'down': {'normal': {'x': 578, 'y': 323}}});
+			alias.character['mom'] = new Character(img, 'mom', 32, 40, 'down', {'down': {'normal': {'x': 578, 'y': 367}}});
+			alias.character['tiff'] = new Character(img, 'tiff', 32, 40, 'down', {'down': {'normal': {'x': 578, 'y': 412}}});
+			alias.character['nic'] = new Character(img, 'nic', 32, 40, 'down', {'down': {'normal': {'x': 578, 'y': 456}}});
 
 			resolve();
 		});
@@ -296,6 +305,7 @@ Story.prototype.getPointers = function() {
 	this.position = [];
 
 	this.position['windowW'] = $(window).width();
+	this.position['windowH'] = $(window).width();
 	this.position['canvasH'] = $('#canvas').height();
 
 	this.position['kelvienT'] = $('#kelvien').offset().top;
@@ -430,7 +440,7 @@ Story.prototype.draw = function() {
 					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTM'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBM'];
 					} else {
 						tile = this.tile['grassMildMM'];
@@ -438,7 +448,7 @@ Story.prototype.draw = function() {
 				} else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTR'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBR'];
 					} else {
 						tile = this.tile['grassMildMR'];
@@ -446,7 +456,7 @@ Story.prototype.draw = function() {
 				} else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
 						tile = this.tile['grassMildTL'];
-					} else if (adjustedJ + roadThreshold >= this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
 						tile = this.tile['grassMildBL'];
 					} else {
 						tile = this.tile['grassMildML'];
@@ -495,11 +505,48 @@ Story.prototype.draw = function() {
 			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
 		}
 	}
-	// TODO
-	// Items (tress surround, houses)
-	//
+	// Items
 
-	// Characters
+	// Tree
+	var tree = this.item['tree'];
+	var treeC = 5;
+	var windowR = getIOrJ(this.position['windowW']);
+	var windowB = getIOrJ(this.position['canvasH']);
+	var oceanT = getIOrJ(this.position['ocean']);
+	var oceanB = oceanT + getIOrJ(this.position['oceanH']);
+	var baseJ = 0;
+	var baseI = 0;
+
+	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
+		// 1 is for scrollbar placeholder in mobile devices
+		for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {	
+			if (((this.position['windowW'] > 768 && baseI < treeC) || (this.position['windowW'] > 992 && baseI + treeC > windowR) || baseJ < treeC || baseJ + treeC > windowB) && (baseJ < oceanT || baseJ > oceanB)) {
+				var diff = (i % 2 == 0) ? 32 : 0;
+				this.cc.drawImage(tree.img, 0, 0, tree.w, tree.h, (i * 64) - this.position['adjustMostLeft'], (j * 64) - diff, tree.w, tree.h);
+			}
+			baseI += 2;
+		}
+		baseJ += 2;
+		baseI = 0;
+	}
+
+	var home = this.item['home'];
+	var homeI = getIOrJ(this.position['kelvien'] + 32);
+	var homeJ = getIOrJ(this.position['kelvienT'] - home.h);
+	this.cc.drawImage(home.img, 0, 0, home.w, home.h, homeI * 32, homeJ * 32, home.w, home.h);
+
+	// Family
+	var dad = this.character['dad'];
+	var mom = this.character['mom'];
+	var tiff = this.character['tiff'];
+	var nic = this.character['nic'];
+	var afterHomeJ = getIOrJ(this.position['kelvienT']);
+	this.cc.drawImage(dad.img, 0, 0, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
+	this.cc.drawImage(mom.img, 0, 0, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
+	this.cc.drawImage(tiff.img, 0, 0, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
+	this.cc.drawImage(nic.img, 0, 0, nic.w, nic.h, (homeI + 4) * 32, (afterHomeJ * 32) - 8, nic.w, nic.h);
+
+	// Movng Character
 	var char = this.character['lapras'];
 	var laprasI = getIOrJ(this.cc.canvas.width / 2);
 	var laprasJ = getIOrJ(this.position['ocean'] + (3 * this.oceanThreshold));
@@ -510,8 +557,6 @@ Story.prototype.draw = function() {
 	laprasBoundary.jz = getIOrJ(this.position['ocean'] + this.position['oceanH'] -  2 * this.oceanThreshold);
 
 	this.insertCharacter(char, laprasI, laprasJ, laprasBoundary, true);
-
-	//
 }
 
 function getIOrJ(t) {
@@ -543,14 +588,13 @@ Story.prototype.registerTile = function(tile, i, j) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
-* Force HTTPS
-*/
-if(window.location.protocol != 'https:'){
-    window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-}
+$(window).on('beforeunload', function() {
+    // $(window).scrollTop(0);
+});
 
-$(window).on('load', function() {
+$(window).on('load', function(){
+	main();
+
 	/*Reference: http://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery*/
 	var isMobile = false;
 	if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
@@ -558,6 +602,8 @@ $(window).on('load', function() {
 		isMobile = true;
 	}
 	var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+	var useFixedMenu = $('#window').width() <= 768;
 
 	var midWindow = $(window).height() / 2;
 	var kelvien = new Kelvien();
@@ -633,24 +679,27 @@ $(window).on('load', function() {
 
 	var controller = new ScrollMagic.Controller({addIndicators: true});
 
-	function resetController() {
-		controller.destroy(true);
-		controller = new ScrollMagic.Controller({addIndicators: true});
-	}
-
 	function main() {
-		// resetController();
 		new Promise(function(resolve, reject) {
 			adjustMain();
 			addFixedMenuMask();
-			arrangeTimeline();
 
 			resolve();
 		}).then(function() {
-			arrangeBg();
+			// Remove preload
+			setTimeout(function() {
+				arrangeTimeline();
+				arrangeBg();
+
+				$('#preload').css({
+					'opacity': 0
+				}).remove();
+				$('#main').css({
+					'opacity': 1
+				});
+			}, 2000);
 		});
 	}
-	main();
 
 	function changeCompanionBg(companion, moving) {
 		var bg = '';
@@ -978,10 +1027,9 @@ $(window).on('load', function() {
 
 	function arrangeBg() {	
 		// Can't just be firefox, enabling for all, must scroll to most bottom for contact though
-		// var h = (isFirefox) ? 50 : 0;
 		var h = 50;
 		cc.canvas.width = $(window).width();
-		cc.canvas.height = $('#main').outerHeight(true) + h + ($(window).height() / 2) - $('.event:last').outerHeight(true);
+		cc.canvas.height = h + $('#main').outerHeight(true) + ($(window).height() / 2) - $('.event:last').outerHeight(true);
 		$('body').height(cc.canvas.height);
 
 		var story = new Story(cc, true);
@@ -1027,11 +1075,4 @@ $(window).on('load', function() {
 	function removeScroll() {
 		$(window).unbind('scroll');
 	}
-
-	$(window).on('resize', function() {
-		if (!isFirefox) {
-			// main();
-		}
-	});
-
 });

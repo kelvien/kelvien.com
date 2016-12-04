@@ -4,9 +4,14 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
 
 		<title>Kelvien Hidayat</title>
-        <meta name="description" content="E-Portfolio">
-        <meta name="keywords" content="kelvien, hidayat, developer, designer, indonesian, indonesia">
+        <meta name="description" content="Interactive biography - Resume - Portfolio">
+        <meta name="keywords" content="kelvien, hidayat, developer, designer, indonesian, indonesia, interactive, biography, resume, portfolio">
         <meta name="author" content="Kelvien Hidayat">
+
+        <meta property="og:url" content="https://www.kelvien.com" />
+        <meta property="og:type" content="Person" />
+        <meta property="og:title" content="Kelvien Hidayat" />
+        <meta property="og:description" content="Interactive biography - Resume - Portfolio" />
 
         <link rel="apple-touch-icon" sizes="120x120" href="assets/media/favicons/apple-touch-icon.png">
         <link rel="icon" type="image/png" href="assets/media/favicons/favicon-32x32.png" sizes="32x32">
@@ -39,9 +44,53 @@
             body {
                 font-family: pokemon;
             }
+
+            #preload {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+
+                opacity: 1;
+                transition: opacity 0.5s;
+
+                z-index: 1;
+            }
+
+            #preload-container {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 200px;
+                height: 100px;
+                margin-top: -50px;
+                margin-left: -100px;
+                text-align: center;
+            }
+
+            #preload h4 {
+                font-weight: bolder;
+            }
+
+            #preload-img {
+                display: inline-block;
+                width: 38px;
+                height: 58px;
+
+                background: url('assets/media/preload-img.png') 0px 0px;
+                animation: preload 0.5s steps(2) infinite;
+            }
+
+            @keyframes preload {
+                100%  { background-position: 77px 0px; }
+            }
         </style>
-        <!-- <div id="test"></div> -->
-        <div id="main" class="container-fluid">
+        <div id="preload">
+            <div id="preload-container">
+                <div id="preload-img"></div>
+                <h4>loading ...<h4>
+            </div>
+        </div>
+        <div id="main" class="loading container-fluid">
             <div class="row">
                 <div id="fixed-menu" class="col-xs-12 col-md-3 offset-lg-1 col-lg-3 offset-xl-2 col-xl-2">
                     <div id="logo-container">
@@ -248,8 +297,7 @@
                                         <div id="profl-video-mask">
                                             <span id="profl-video" title="Coffee !"></span>
                                         </div>
-                                        <div id="profl-figure" hidden></div>
-                                        <div id="bio" hidden>&#x201C &#x201D</div>
+                                        <div id="bio">&#x201C To live is to know love &#x201D</div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-8 about-center">
@@ -257,7 +305,7 @@
                                         <dt>Name</dt><dd>Kelvien Hidayat</dd>
                                         <dt>Hometown</dt><dd>Surabaya, Indonesia</dd>
                                         <dt>Lives in</dt><dd>Albany, NY</dd>
-                                        <dt>Occupation</dt><dd>Full-Stack Developer, <i><span class="jk">Pokemon Trainer</span></i></dd>
+                                        <dt>Occupation</dt><dd>Full-stack Developer, <i><span class="jk">Pokemon Trainer</span></i></dd>
                                         <dt>Specialty</dt><dd>Web technologies</dd>
                                         <dt>&#x20AC Email</dt><dd><span class="email">mas@kelvien.com</span></dd>
                                     </dl>
@@ -273,14 +321,13 @@
                             <div id="companion"></div>
                             <div><span class="dialog-box"></span></div>
                         </div>
-                        <div id="timeline-line" hidden></div>
                         <div id="timeline-gap"></div>
                         <div class="event" id="event-first">
                             <div class="event-title">
                                 <h4>Born</h4>
                             </div>
                             <div class="event-content">
-                                <p>I was born at Surabaya, Indonesia</p>
+                                <p>I was born and raised at Surabaya, Indonesia</p>
                             </div>
                         </div>
                         <div class="event project">
@@ -288,8 +335,8 @@
                                 <h4>2003</h4>
                             </div>
                             <div class="event-content">
-                                <h4 class="event-content-title">Intro to code</h4>
-                                <p>I learned Visual Basic .NET and HTML at high school. And I &#x201C like &#x201D it.</p>
+                                <h4 class="event-content-title">Code 101</h4>
+                                <p>I learned Visual Basic .NET and HTML at high school. And I &#x201Clike&#x201D it, but do nothing about it</p>
                             </div>
                         </div>
                         <div class="event project" data-event='fly'>
@@ -298,7 +345,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">Moved to Malaysia</h4>
-                                <p>After I graduated from high school, my parents sent me to Malaysia to get a degree.</p>
+                                <p>After I graduated from high school, my parents sent me to Malaysia to get a degree</p>
                             </div>
                         </div>
                         <div class="event project" data-event='fly'>
@@ -307,7 +354,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">Moved to USA</h4>
-                                <p>I decided to transfer to Iowa at USA. It turned out to be my best decision ever ! </p>
+                                <p>I decided to transfer to Iowa State University at USA. It turned out to be a great decision, though I clearly had no idea how far I am going to be from my family ! </p>
                             </div>
                         </div>
                         <div class="event project">
@@ -316,7 +363,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : PERMIAS v.1</h4>
-                                <p>Made the first custom website for PERMIAS (a student organization) after several years.</p>
+                                <p>Made a custom website for PERMIAS (a student organization) after it's been missing for years.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">HTML</div>
                                     <div class="tag">CSS</div>
@@ -328,7 +375,7 @@
                         </div>
                         <div class="event project">
                             <div class="event-title">
-                                <h4>May 2014</h4>
+                                <h4>May 2014 - Dec 2014</h4>
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">JOB : Thinix</h4>
@@ -344,11 +391,11 @@
                         </div>
                         <div class="event project">
                             <div class="event-title">
-                                <h4>July 2014</h4>
+                                <h4>Dec 2014</h4>
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : PERMIAS v.2</h4>
-                                <p>Improved PERMIAS v.1. by using &#x201C Responsive &#x201D and &#x201C Material &#x201D design for a more modern-look website.</p>
+                                <p>Entirely revamp PERMIAS v.1. Applied &#x201CResponsive&#x201D and &#x201CMaterial&#x201D design for a more modern-look website.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">HTML</div>
@@ -365,9 +412,8 @@
                                 <h4>2015</h4>
                             </div>
                             <div class="event-content">
-                                <h4 class="event-content-title">New Self</h4>
-                                <p>My soul knows its savior.</p>
-                                <p>&#x201C All have sinned and fall short of the glory of God, and are justified by His grace as a gift. &#x201D - Romans 3 : 23-24</p>
+                                <h4 class="event-content-title">My soul knows its savior</h4>
+                                <p>&#x201C The Lord is my shepherd, I lack nothing. &#x201D - Psalms 23 : 1</p>
                             </div>
                         </div>
                         <div class="event project">
@@ -376,7 +422,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : International Student Council</h4>
-                                <p>Built a website and a light-weight custom Content Management System (CMS) to manage a student organization's content. Used &#x201C Responsive &#x201D and &#x201C Material &#x201D design.</p>
+                                <p>Built a custom website and a light-weight custom Content Management System (CMS) to manage a student organization's content. Adopted &#x201CResponsive&#x201D and &#x201CMaterial&#x201D design.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">MySQL</div>
@@ -414,7 +460,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">GRADUATION</h4>
-                                <p>Bachelors of Science in Computer Science. Finally.</p>
+                                <p>Bachelors of Science in Computer Science. Finally</p>
                             </div>
                         </div>
                         <div class="event project" data-event="companion">
@@ -432,7 +478,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">PROJECT : Japri</h4>
-                                <p>It is a fun project. I created a smart home system at my apartment. A full complete article that talks about the project can be seen at <a target="_blank" href="https://medium.com/@kelvien/japri-7a43cf7f0cdc">this article</a></p>
+                                <p>I created a smart home system at my apartment that consists of a web application and an embedded system. A full complete article that talks about the project can be seen at <a target="_blank" href="https://medium.com/@kelvien/japri-7a43cf7f0cdc">this article</a>.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">Angular.JS</div>
                                     <div class="tag">NodeJS</div>
@@ -468,7 +514,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">JOB : Xerox</h4>
-                                <p>I am a full-stack developer. I learn a full software development lifecycle to produce a high-quality software. I also develop and maintain micro-services, scripts and a web application.</p>
+                                <p>I am a full-stack developer. I learn a full software development lifecycle to produce a high-quality software. I develop and maintain micro-services, scripts and a web application.</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">Oracle SQL</div>
@@ -490,7 +536,7 @@
                             </div>
                             <div class="event-content">
                                 <h4 class="event-content-title">Project : kelvien.com</h4>
-                                <p>This is my personal website/portfolio for people to connect with me.</p>
+                                <p>This is my short interactive biography / resume / portfolio for people to connect with me. I also hope you enjoy reading it !</p>
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">Node.JS</div>
                                     <div class="tag">HTML</div>
@@ -507,13 +553,14 @@
                                 <div class="skill-title">
                                     <div class="skill-pb skill-pb-selected"></div>
                                     <span>Kelvien Hidayat</span>
-                                    <span class="skill-indicator" title="Experience"></span>
+                                    <span class="skill-indicator" title="Good experience !"></span>
                                 </div>
                                 <div class="skill-content">
-                                    <p>Available to freelance</p>
+                                    <p>Contact me if you have any question about anything !</p>
+                                    <div class="gap"></div>
                                     <p>Email me at <a href="mailto:mas@kelvien.com"><span class="email">mas@kelvien.com</span></a></p>
-                                    <p>Also find me at <a target="_blank" href="https://www.linkedin.com/in/kelvien">Linkedin</a></p>
-                                    <p class="pull-right"><a href="">Resume</a></p>
+                                    <p>You can find me at <a target="_blank" href="https://www.linkedin.com/in/kelvien">Linkedin</a> too</p>
+                                    <p>Also, here is <a target="_blank" href="assets/resume.pdf"> my resume</a></p>
                                 </div>
                             </div>
                         </div>
@@ -527,10 +574,7 @@
 	</body>
 
     <script type="text/javascript" src="assets/js/jquery-3.1.1.min.js"></script>
-    <!-- <script type="text/javascript" src="assets/greensock-js/src/minified/TweenMax.min.js"></script> -->
-    <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/ScrollMagic.min.js"></script>
-    <!-- <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/animation.gsap.min.js"></script> -->
-    <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/jquery.ScrollMagic.min.js"></script>
-    <!-- <script type="text/javascript" src="assets/janpaepke-ScrollMagic-ae215ee/scrollmagic/minified/plugins/debug.addIndicators.min.js"></script> -->
+    <script type="text/javascript" src="assets/js/ScrollMagic.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.ScrollMagic.min.js"></script>
 	<script type="text/javascript" src="assets/js/main.js"></script>
 </html>
