@@ -1,1 +1,0 @@
-window.onload=function(){requirejs(["assets/js/app"])};
