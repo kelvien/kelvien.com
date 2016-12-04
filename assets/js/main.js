@@ -677,9 +677,15 @@ $(window).on('load', function(){
 		}
 	}
 
-	var controller = new ScrollMagic.Controller({addIndicators: true});
+	var controller;
 
 	function main() {
+		if (controller) {
+			controller.destroy(1);
+			controller = undefined;
+		}
+		controller = new ScrollMagic.Controller({addIndicators: true});
+
 		new Promise(function(resolve, reject) {
 			adjustMain();
 			addFixedMenuMask();

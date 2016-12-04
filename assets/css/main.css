@@ -1,6 +1,6 @@
 #main {
 	position: relative;
-
+	opacity: 0;
 	transition: opacity 0.5s;
 }
 
@@ -360,30 +360,24 @@ dl.center dd {
 	border-bottom: 1px solid #393C44;
 }
 
-.event-left .event-title {
-	position: relative;
-	right: -24px;
+.event-title-contact {
+	padding-left: 48px;
 }
 
-.event-left .event-title.event-title-contact {
-	position: relative;
-	right: 24px;
+.event-left .event-title {
+    position: relative;
+    right: -24px;
+}
+
+.event-right .event-title {
+    position: relative;
+    left: -24px;
 }
 
 .event-left .event-content {
 	border-top-left-radius: 2px;
 	border-bottom-left-radius: 2px;
 	border-bottom-right-radius: 2px;
-}
-
-.event-right .event-title {
-	position: relative;
-	left: -24px;
-}
-
-.event-right .event-title.event-title-contact {
-	position: relative;
-	left: 24px;
 }
 
 .event-right .event-content {
@@ -564,7 +558,7 @@ footer {
 html, body {
 	/* Fixed menu will have overflow. does not comply to Bootstrap Grid system*/
 	position: relative;
-	overflow-x: hidden;
+
 
 	transition: opacity 0.5s;
 }
