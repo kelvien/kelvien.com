@@ -589,14 +589,14 @@ Story.prototype.registerTile = function(tile, i, j) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $(window).on('beforeunload', function() {
-    // $(window).scrollTop(0);
+    $(window).scrollTop(0);
 });
 
 $(window).on('load', function(){
 	main();
 
-	$(window).on('orientationchange', function() {
-		location.reload();
+	$(window).on('orientationchange', function(e) {
+		location.reload(true);
 	})
 
 	/*Reference: http://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery*/
