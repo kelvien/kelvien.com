@@ -431,7 +431,7 @@ Story.prototype.draw = function() {
 
 			// ROAD
 			var roadThreshold = 1 * 32;
-			if (adjustedJ >= this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
+			if (adjustedJ > this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
 				||
 				adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + 64) {
 				// Before and after ocean
@@ -439,27 +439,27 @@ Story.prototype.draw = function() {
 					||
 					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
-						tile = this.tile['grassMildTM'];
+						tile = this.tile['grassMildTM']; // TM
 					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
-						tile = this.tile['grassMildBM'];
+						tile = this.tile['grassMildBM']; // BM
 					} else {
-						tile = this.tile['grassMildMM'];
+						tile = this.tile['grassMildMM']; // MM
 					}
 				} else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
-						tile = this.tile['grassMildTR'];
+						tile = this.tile['grassMildTR']; // TR
 					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
-						tile = this.tile['grassMildBR'];
+						tile = this.tile['grassMildBR']; // BR
 					} else {
-						tile = this.tile['grassMildMR'];
+						tile = this.tile['grassMildMR']; // MR
 					}
 				} else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
 					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
-						tile = this.tile['grassMildTL'];
+						tile = this.tile['grassMildTL']; // TL
 					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
-						tile = this.tile['grassMildBL'];
+						tile = this.tile['grassMildBL']; // BL
 					} else {
-						tile = this.tile['grassMildML'];
+						tile = this.tile['grassMildML']; // ML
 					}
 				} else {
 					tile = this.tile['grass1'];	
@@ -531,7 +531,7 @@ Story.prototype.draw = function() {
 	}
 
 	var home = this.item['home'];
-	var homeI = getIOrJ(this.position['kelvien'] + 32);
+	var homeI = getIOrJ(this.position['kelvien'] + 64);
 	var homeJ = getIOrJ(this.position['kelvienT'] - home.h);
 	this.cc.drawImage(home.img, 0, 0, home.w, home.h, homeI * 32, homeJ * 32, home.w, home.h);
 
@@ -594,6 +594,10 @@ $(window).on('beforeunload', function() {
 
 $(window).on('load', function(){
 	main();
+
+	$(window).on('orientationchange', function() {
+		location.reload();
+	})
 
 	/*Reference: http://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery*/
 	var isMobile = false;
@@ -940,6 +944,10 @@ $(window).on('load', function(){
 		var evenOdd;
 
 		$.each($('.event'), function(i, e) {
+			$(e).removeClass('event-right').removeClass('event-left').css({
+				'left': '',
+				'right': ''
+			});
 			var mid = $('#timeline').width() / 2;
 			/* Bootstrap SM down */
 			if (window.innerWidth <= 576) {
