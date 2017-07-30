@@ -1,13 +1,18 @@
 image: node:4.2.2
 
+cache:
+  paths:
+   - node_modules/
+
 stages:
   - build
   - deploy
 
 minify:
   stage: build
+  before_script:
+  - npm install -g gulp
   script:
-  - npm install
   - gulp --production
   - mkdir .public
   - cp -r {index.html,dist} .public
