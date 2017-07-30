@@ -1,1 +1,1309 @@
-function getIOrJ(i){for(var t=-1,e=0;e<i;)t++,e+=32;return t}$("html").hasClass("not-supported")||"https:"!=window.location.protocol;var userAgent=window.navigator.userAgent,isIE=userAgent.indexOf("MSIE ");isIE>0&&parseInt(userAgent.substring(isIE+5,userAgent.indexOf(".",isIE)))<11&&$.each($("#Kelvien").children(),function(i,t){$(t).find("use[fill='black']").removeAttr("xlink:href")}),function(){for(var i=0,t=["ms","moz","webkit","o"],e=0;e<t.length&&!window.requestAnimationFrame;++e)window.requestAnimationFrame=window[t[e]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[t[e]+"CancelAnimationFrame"]||window[t[e]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(t,e){var s=(new Date).getTime(),o=Math.max(0,16-(s-i)),n=window.setTimeout(function(){t(s+o)},o);return i=s+o,n}),window.cancelAnimationFrame||(window.cancelAnimationFrame=function(i){clearTimeout(i)})}();var Kelvien=function(){this.element=$("#kelvien"),this.me=this.element[0],this.oriMarginLeft=Math.abs(parseInt(this.element.css("margin-left"))),this.initialPositionX=parseInt(this.element.css("left")),this.initialPositionY=parseInt(this.element.css("top")),this.movingThreshold=8,this.movingCount=this.movingThreshold,this.isMoving,this.evenOdd,this.direction="down",this.state="normal"},Companion=function(i){this.element=i,this.me=this.element[0],this.isMoving,this.evenOdd,this.direction="down"},Tile=function(i,t,e,s,o,n){this.src=i,this.name=t,this.x=e,this.y=s,this.posX,this.posY,this.deg=o,this.flipH=n,this.processedTile=this.processTile(this),this.img=this.processedTile,this.neighbors=[]};Tile.prototype.processTile=function(i){var t=document.createElement("canvas"),e=t.getContext("2d");t.width=32,t.height=32;return 0!=i.deg?(e.translate(16,16),e.rotate(this.deg*Math.PI/180),e.drawImage(this.src,this.x,this.y,32,32,-16,-16,32,32)):e.drawImage(this.src,this.x,this.y,32,32,0,0,32,32),this.flipH&&(e.translate(32,0),e.scale(-1,1),e.drawImage(t,0,0)),t};var Item=function(i,t,e,s,o,n){this.src=i,this.name=t,this.x=e,this.y=s,this.w=o,this.h=n,this.i,this.j,this.processedItem=this.processItem(this),this.img=this.processedItem};Item.prototype.processItem=function(){var i=document.createElement("canvas"),t=i.getContext("2d");return i.width=this.w,i.height=this.h,t.drawImage(this.src,this.x,this.y,this.w,this.h,0,0,this.w,this.h),i};var Character=function(i,t,e,s,o,n){this.src=i,this.name=t,this.w=e,this.h=s,this.evenOdd,this.direction=o,this.isMoving,this.json=n,this.processedCharacter=this.processCharacter(this),this.img=this.processedCharacter,this.boundary,this.srcPos={x:0,y:0},this.destPos={x:0,y:0}};Character.prototype.processCharacter=function(){if(this.json){var i=this.isMoving?this.evenOdd?"left":"right":"normal";this.x=this.json[this.direction][i].x,this.y=this.json[this.direction][i].y}var t=document.createElement("canvas"),e=t.getContext("2d");return t.width=this.w,t.height=this.h,e.drawImage(this.src,this.x,this.y,this.w,this.h,0,0,this.w,this.h),t};var Story=function(i,t){this.cc=i,this.cc.webkitImageSmoothingEnabled=!1,this.cc.mozImageSmoothingEnabled=!1,this.cc.msImageSmoothingEnabled=!1,this.cc.imageSmoothingEnabled=!1,this.tiles=[],this.pointers=this.getPointers(),this.animation=t,this.tile=[],this.loadImage(),this.item=[],this.character=[],this.movingCharacter=[],this.a=[],this.aPosI=[],this.aPosJ=[],this.aStart=[],this.aDirection=[],this.endingDirection=!1,this.oceanThreshold=32,this.adjustedI=32-this.position.adjustMostLeft};Story.prototype.destroy=function(){window.clearTimeout(this.loopEnding),window.clearInterval(this.laprasInterval),window.clearInterval(this.endingInterval);for(var i in this.a)this.a.hasOwnProperty(i)&&$(this.a[i]).remove()},Story.prototype.loadImage=function(){var i=this,t=new Image;t.src="assets/media/sprite.png",t.onload=function(){i.tile.grass=new Tile(t,"grass",34,226,0),i.tile.grass1=new Tile(t,"grass1",136,260,0),i.tile.flower=new Tile(t,"flower",204,192,0),i.tile.grassMildMM=new Tile(t,"grassMildMM",204,260,0),i.tile.grassMildML=new Tile(t,"grassMildML",238,260,0),i.tile.grassMildMR=new Tile(t,"grassMildMR",238,260,0,1),i.tile.grassMildTL=new Tile(t,"grassMildTL",238,226,0),i.tile.grassMildTM=new Tile(t,"grassMildTM",238,192,0),i.tile.grassMildTR=new Tile(t,"grassMildTR",238,226,0,1),i.tile.grassMildBL=new Tile(t,"grassMildBL",272,226,0,1),i.tile.grassMildBM=new Tile(t,"grassMildBM",238,192,180),i.tile.grassMildBR=new Tile(t,"grassMildBR",272,226,0),i.tile.rockTile=new Tile(t,"rockTile",170,260,0),i.tile.oceanTL=new Tile(t,"oceanTL",34,260,0),i.tile.oceanTM=new Tile(t,"oceanTM",102,192,0),i.tile.oceanTR=new Tile(t,"oceanTR",136,192,0),i.tile.oceanML=new Tile(t,"oceanML",136,226,0),i.tile.oceanMM=new Tile(t,"oceanMM",68,192,0),i.tile.oceanMR=new Tile(t,"oceanMR",68,226,0),i.tile.oceanBL=new Tile(t,"oceanBL",68,260,0),i.tile.oceanBM=new Tile(t,"oceanBM",102,260,0),i.tile.oceanBR=new Tile(t,"oceanBR",102,226,0),i.tile.roadTL=new Tile(t,"roadTL",0,192,90),i.tile.roadTM=new Tile(t,"roadTM",0,226,0),i.tile.roadTR=new Tile(t,"roadTR",0,192,180),i.tile.roadML=new Tile(t,"roadML",0,226,(-90)),i.tile.roadMM=new Tile(t,"roadMM",0,260,90),i.tile.roadMR=new Tile(t,"roadMR",0,226,90),i.tile.roadBL=new Tile(t,"roadBL",0,192,0),i.tile.roadBM=new Tile(t,"roadBM",0,226,180),i.tile.roadBR=new Tile(t,"roadBR",0,192,(-90)),i.item.tree=new Item(t,"tree",0,56,64,94),i.item.home=new Item(t,"home",620,372,160,128);var e={up:{left:{x:303,y:468},normal:{x:303,y:468},right:{x:303,y:468}},down:{left:{x:267,y:468},normal:{x:267,y:468},right:{x:267,y:468}},left:{left:{x:339,y:468},normal:{x:339,y:468},right:{x:339,y:468}},right:{left:{x:375,y:468},normal:{x:375,y:468},right:{x:375,y:468}}};i.character.lapras=new Character(t,"lapras",32,32,"left",e),i.character.dad=new Character(t,"dad",32,40,"down",{down:{normal:{x:578,y:323}}}),i.character.mom=new Character(t,"mom",32,40,"down",{down:{normal:{x:578,y:367}}}),i.character.tiff=new Character(t,"tiff",32,40,"down",{down:{normal:{x:578,y:412}}}),i.character.nic=new Character(t,"nic",32,40,"down",{down:{normal:{x:578,y:456}}}),i.draw(),i.setupAnimateDOM(),i.startAnimateLapras()}},Story.prototype.getPointers=function(){this.position=[],this.position.windowW=$(window).width(),this.position.windowH=$(window).width(),this.position.canvasH=$("#canvas").height(),this.position.kelvienT=$("#kelvien").offset().top,this.position.kelvien=$("#kelvien").offset().left,this.position.adjustMostLeft=this.position.kelvien%32,this.position.start=$("#timeline-gap").offset().top,this.position.ocean=$(".event[data-event='fly']:first").offset().top,this.position.oceanH=$(".event[data-event='fly']:first").outerHeight(!0)+$(".event[data-event='fly']:last").outerHeight(!0),this.position.ending=$(".event:last").offset().top,this.position.endingH=$(".event:last").outerHeight(!0)},Story.prototype.insertCharacter=function(i,t,e,s,o){i.srcPos.i=t,i.srcPos.j=e,i.boundary=s,o&&(this.movingCharacter[i.name]=i),this.character.push(i)},Story.prototype.setupAnimateDOM=function(){var i=$("#canvas-container"),t=$("<div>"),e=this.position.windowW/2,s=this.position.ocean+3*this.oceanThreshold;t.attr("id","lapras"),t.css({position:"absolute",background:"url(assets/media/sprite.png)","background-position":"-375px -468px",width:32,height:32,top:s,right:e}),i.append(t),this.a.lapras=t,this.aPosI.lapras=e,this.aPosJ.lapras=s,this.aDirection.lapras="right";var o=$("<div>"),n=-62;o.attr("id","latias"),o.css({position:"absolute",background:"url(assets/media/sprite.png)","background-position":"-455px -448px",width:56,height:52,top:this.position.ending+64,right:n}),i.append(o),this.a.latias=o;var a=$("<div>"),r=-112;a.attr("id","latias"),a.css({position:"absolute",background:"url(assets/media/sprite.png)","background-position":"-520px -448px",width:56,height:52,top:this.position.ending+96,right:r}),i.append(a),this.a.latios=a},Story.prototype.stopAnimateLapras=function(){this.isAnimateLapras=!1},Story.prototype.startAnimateLapras=function(){this.isAnimateLapras=!0,this.laprasInterval||this.animateLapras()},Story.prototype.animateLapras=function(){var i,t,e,s=this,o=1;"left"==s.aDirection.lapras?(i=s.aPosI.lapras-o,t=s.aPosJ.lapras,i-96<=0&&(s.aDirection.lapras="up",e="-303px -468px")):"right"==s.aDirection.lapras?(i=s.aPosI.lapras+o,t=s.aPosJ.lapras,i+96>=s.position.windowW&&(s.aDirection.lapras="down",e="-267px -468px")):"up"==s.aDirection.lapras?(i=s.aPosI.lapras,t=s.aPosJ.lapras-o,t-96<=s.position.ocean&&(s.aDirection.lapras="right",e="-375px -468px")):"down"==s.aDirection.lapras&&(i=s.aPosI.lapras,t=s.aPosJ.lapras+o,t+96>=s.position.ocean+s.position.oceanH&&(s.aDirection.lapras="left",e="-339px -468px")),s.aPosI.lapras=i,s.aPosJ.lapras=t,s.a.lapras.css({"background-position":e,top:t,left:i}),s.laprasInterval=requestAnimationFrame(function(){s.animateLapras()})},Story.prototype.stopAnimateEnding=function(){this.isAnimateEnding=!1,clearTimeout(this.loopEnding),this.loopEnding=void 0},Story.prototype.startAnimateEnding=function(){this.isAnimateEnding=!0,this.loopEnding=!0,this.endingInterval||(this.aStart.latias=-62,this.aStart.latios=-112,this.aPosI.latias=this.aStart.latias,this.aPosI.latios=this.aStart.latios,this.animateEnding())},Story.prototype.animateEnding=function(){var i=this;if(i.a.latias&&i.a.latios){var t=i.aPosI.latias+6.1;i.aPosI.latias=t,i.a.latias.css({right:t});var e=i.aPosI.latios+6;e>=i.position.windowW+100?(window.cancelAnimationFrame(i.endingInterval),i.endingInterval=void 0,i.loopEnding&&(i.loopEnding=setTimeout(function(){i.a.latias.css({right:i.aStart.latias}),i.aPosI.latias=i.aStart.latias,i.a.latios.css({right:i.aStart.latios}),i.aPosI.latios=i.aStart.latios,i.animateEnding()},2e4))):(i.aPosI.latios=e,i.a.latios.css({right:e}),i.endingInterval=requestAnimationFrame(function(){i.animateEnding()}))}},Story.prototype.stopAnimation=function(){this.animation=!1},Story.prototype.animateLaprasCanvas=function(){var i,t,e=17,s=this,o=this.movingCharacter.lapras;switch(o.direction){case"up":o.srcPos.j<=o.boundary.ja?o.direction="left":o.srcPos.j-=1/e,o.srcPos.j%1==0?(i=this.tiles[o.srcPos.j][o.srcPos.i],t=this.tiles[o.srcPos.j+1][o.srcPos.i]):(i=this.tiles[Math.floor(o.srcPos.j)][o.srcPos.i],t=this.tiles[Math.ceil(o.srcPos.j)][o.srcPos.i]);break;case"down":o.srcPos.j>=o.boundary.jz?o.direction="right":o.srcPos.j+=1/e,o.srcPos.j%1==0?(i=this.tiles[o.srcPos.j][o.srcPos.i],t=this.tiles[o.srcPos.j-1][o.srcPos.i]):(i=this.tiles[Math.floor(o.srcPos.j)][o.srcPos.i],t=this.tiles[Math.ceil(o.srcPos.j)][o.srcPos.i]);break;case"left":o.srcPos.i<=o.boundary.ia?o.direction="down":o.srcPos.i-=1/e,o.srcPos.i%1==0?(i=this.tiles[o.srcPos.j][o.srcPos.i],t=this.tiles[o.srcPos.j][o.srcPos.i+1]):(t=this.tiles[o.srcPos.j][Math.floor(o.srcPos.i)],i=this.tiles[o.srcPos.j][Math.ceil(o.srcPos.i)]);break;case"right":o.srcPos.i>=o.boundary.iz?o.direction="up":o.srcPos.i+=1/e,o.srcPos.i%1==0?(i=this.tiles[o.srcPos.j][o.srcPos.i],t=this.tiles[o.srcPos.j][o.srcPos.i-1]):(i=this.tiles[o.srcPos.j][Math.floor(o.srcPos.i)],t=this.tiles[o.srcPos.j][Math.ceil(o.srcPos.i)])}this.cc.drawImage(i.img,0,0,32,32,32*i.i-this.adjustedI,32*i.j,33,33),this.cc.drawImage(t.img,0,0,32,32,32*t.i-this.adjustedI,32*t.j,33,33),o.img=o.processCharacter(o),this.cc.drawImage(o.img,0,0,o.w,o.h,32*o.srcPos.i-this.adjustedI,32*o.srcPos.j,o.w,o.h),requestAnimationFrame(function(){s.animateLapras()})},Story.prototype.draw=function(){for(var i=0;i<this.cc.canvas.height/32;i++){this.tiles[i]=[];for(var t=0;t<this.cc.canvas.width/32+1;t++){var e=null,s=32*t,o=32*i;s-=this.adjustedI;var n=32;e=o>this.position.start&&o+this.oceanThreshold<=this.position.ocean||o-this.oceanThreshold>=this.position.ocean+this.position.oceanH&&o<=this.position.ending+64?s+n>this.position.kelvien&&s<=this.position.kelvien||s>=this.position.kelvien&&s-n<this.position.kelvien?o-n<=this.position.kelvienT&&o>this.position.kelvienT?this.tile.grassMildTM:o+n>this.position.ending+64&&o<this.position.ending+64?this.tile.grassMildBM:this.tile.grassMildMM:s-n<=this.position.kelvien&&s>this.position.kelvien?o-n<=this.position.kelvienT&&o>this.position.kelvienT?this.tile.grassMildTR:o+n>this.position.ending+64&&o<this.position.ending+64?this.tile.grassMildBR:this.tile.grassMildMR:s+n>=this.position.kelvien&&s<this.position.kelvien?o-n<=this.position.kelvienT&&o>this.position.kelvienT?this.tile.grassMildTL:o+n>this.position.ending+64&&o<this.position.ending+64?this.tile.grassMildBL:this.tile.grassMildML:this.tile.grass1:o-this.oceanThreshold>=this.position.ocean&&o+this.oceanThreshold<=this.position.ocean+this.position.oceanH?o-(this.oceanThreshold+32)<this.position.ocean&&o-this.oceanThreshold>=this.position.ocean?s<=0?this.tile.oceanTL:s+32>this.position.windowW?this.tile.oceanTR:this.tile.oceanTM:o+(this.oceanThreshold+32)>=this.position.ocean+this.position.oceanH?s<=0?this.tile.oceanBL:s+32>this.position.windowW?this.tile.oceanBR:this.tile.oceanBM:s<=0?this.tile.oceanML:s+32>this.position.windowW?this.tile.oceanMR:this.tile.oceanMM:this.tile.grass1,this.cc.drawImage(e.img,0,0,32,32,s,o,33,33)}}for(var a=this.item.tree,r=5,c=getIOrJ(this.position.windowW),h=getIOrJ(this.position.canvasH),l=getIOrJ(this.position.ocean),d=l+getIOrJ(this.position.oceanH),p=0,m=0,i=0;i<this.cc.canvas.height/32;i++){for(var t=0;t<this.cc.canvas.width/32+1;t++){if((this.position.windowW>768&&m<r||this.position.windowW>992&&m+r>c||p<r||p+r>h)&&(p<l||p>d)){var g=t%2==0?32:0;this.cc.drawImage(a.img,0,0,a.w,a.h,64*t-this.position.adjustMostLeft,64*i-g,a.w,a.h)}m+=2}p+=2,m=0}var w=this.item.home,u=getIOrJ(this.position.kelvien+64),v=getIOrJ(this.position.kelvienT-w.h);this.cc.drawImage(w.img,0,0,w.w,w.h,32*u,32*v,w.w,w.h);var f=this.character.dad,y=this.character.mom,x=this.character.tiff,M=this.character.nic,b=getIOrJ(this.position.kelvienT);this.cc.drawImage(f.img,0,0,f.w,f.h,32*(u+1),32*b-8,f.w,f.h),this.cc.drawImage(y.img,0,0,y.w,y.h,32*(u+2),32*b-8,y.w,y.h),this.cc.drawImage(x.img,0,0,x.w,x.h,32*(u+3),32*b-8,x.w,x.h),this.cc.drawImage(M.img,0,0,M.w,M.h,32*(u+4),32*b-8,M.w,M.h)},Story.prototype.registerTile=function(i,t,e){var s=$.extend(!0,{},i);return s.i=t,s.j=e,0!=e&&(this.tiles[e-1][t].neighbors.bottom=s,s.neighbors.top=this.tiles[e-1][t]),0!=t&&(this.tiles[e][t-1].neighbors.right=s,s.neighbors.left=this.tiles[e][t-1]),s},$("#preload").show(),$("#main").show(),$(window).on("load",function(){function i(){var i=1e3;$("#menu-container li").unbind("click").bind("click",function(){var t=2,e=0;switch($(this).data("menu")){case"about":e=0;break;case"story":e=$(".event:first").offset().top-$(window).height()/2+t;break;case"contact":e=$("body").height();break;default:e=0}$("html, body").animate({scrollTop:e},i)})}function t(i){$("#menu-container li").removeClass("active"),$("#menu-container li[data-menu='"+i+"']").addClass("active")}function e(){var i=$("#about").outerHeight(!0)+$("#scroll-helper").outerHeight(!0),t=window.innerWidth<768?$("#fixed-menu").outerHeight(!0)+i:i,e=window.innerHeight<t?0:Math.max(0,(window.innerHeight-t)/2);$("#main").css("padding-top",e)}function s(){if(window.innerWidth<768){if(!$("#menu-mask").length){var i=$("<div></div>").attr("id","menu-mask").height($("#fixed-menu").outerHeight(!0));$("#about-container").before(i)}}else $("#menu-mask").length&&$("#menu-mask").remove()}function o(){e(),s(),k&&(k=k.destroy(1),k=void 0),k=new ScrollMagic.Controller({addIndicators:!0}),g(),w()}function n(i,t){var e="",s=38,o=-36;t?"up"==i.direction?(e=i.evenOdd?"-133px -460px":"-221px -460px",o=s):(e=i.evenOdd?"-5px -460px":"-91px -460px",o=o):"up"==i.direction?(e="-177px -460px",o=s):(e="-47px -460px",o=o),i.element.css({top:o,"background-position":e})}function a(i){var t="";i.isMoving?i.movingCount>0?i.movingCount--:(i.movingCount=i.movingThreshold,t+=r(i,!0),m(),i.element.css({"background-position":t}),i.companion&&n(i.companion,!0)):(t+=r(i,!1),m(),i.element.css({"background-position":t}),i.companion&&n(i.companion,!1))}function r(i,t){if(t)switch(i.state){case"fly":switch(i.element.css({width:48,height:80}),i.direction){case"up":return i.evenOdd?"-626px -150px":"-673px -150px";case"down":return i.evenOdd?"-578px -150px":"-531px -150px"}break;case"done":return i.element.css({width:32,height:40}),"-384px -150px";default:switch(i.element.css({width:32,height:40}),i.direction){case"up":return i.evenOdd?"-192px -150px":"-224px -150px";case"down":return i.evenOdd?"-129px -150px":"-159px -150px"}}else switch(i.state){case"fly":switch(i.element.css({width:48,height:80}),i.direction){case"up":return"-626px -150px";case"down":return"-578px -150px"}case"done":return i.element.css({width:32,height:40}),"-384px -150px";default:switch(i.element.css({width:32,height:40}),i.direction){case"up":return"-32px -150px";case"down":return"0 -150px"}}}function c(i){var t=i.element.find("#companion");i.companion=new Companion(t),t.css({opacity:1})}function h(i){i.companion&&i.companion.element.css({opacity:0})}function l(i,t){var e,s,o=i.element.find(".dialog-box");switch(t){case"love":e="0 -424px",s="love";break;case"smile":e="-64px -424px",s="smile"}s+=" 1s steps(2) infinite",o.css({"background-position":e,animation:s,opacity:1})}function d(i){var t=i.element.find(".dialog-box");t.css({opacity:0})}function p(){new ScrollMagic.Scene({triggerElement:"#timeline-gap",duration:$("#timeline").height()-$(".event:last").outerHeight(!0),reverse:!0}).setPin("#kelvien").on("start enter",function(){u(),M.css({opacity:1}),$("#scroll-helper").css({opacity:0}),$("#about").css({opacity:0}),t("story")}).on("leave",function(){v(),"REVERSE"==k.info("scrollDirection")&&(x.direction="down",a(x,!0),M.css({opacity:0})),$("#scroll-helper").css({opacity:1}),$("#about").css({opacity:1}),t("about")}).addTo(k)}function m(){x.element.css({"margin-left":-(x.element.width()/2-x.oriMarginLeft)})}function g(){var e;$.each($(".event"),function(i,s){$(s).removeClass("event-right").removeClass("event-left").css({left:"",right:""});var o=$("#timeline").width()/2;if(window.innerWidth<=576){$(s).addClass("event-right").removeClass("event-left");var n=$("#timeline").width()-$(s).outerWidth();$(s).css({left:-n})}else{if(e){$(s).addClass("event-left");var r=o-$(s).outerWidth();$(s).css({right:-r})}else{$(s).addClass("event-right");var r=o-$(s).outerWidth();$(s).css({left:-r})}e=!e}var p=".event:eq("+i+")",m=new ScrollMagic.Scene({triggerElement:p,triggerOffset:y,duration:$(s).outerHeight(!0),reverse:!0}).on("enter",function(){$(s).css("opacity",1)}).on("leave",function(){"REVERSE"==k.info("scrollDirection")&&$(s).css("opacity",0)});m.on("enter",function(){switch($(s).data("event")){case"normal":x.state="normal";break;case"fly":x.state="fly",h(x);break;case"companion":x.state="companion",c(x);break;case"love":l(x,"love");break;case"sweat":h(x);break;case"projectKelvien":x.state="normal",c(x);break;case"contact":t("contact"),h(x),l(x,"smile"),x.state="done",a(x,!1),P.startAnimateEnding();break;default:x.state="normal"}}),m.on("leave",function(){switch($(s).data("event")){case"contact":P.stopAnimateEnding()}d(x)}),m.addTo(k)}),p(),i()}function w(){var i=50;T.canvas.width=$(window).width(),T.canvas.height=i+$("#main").outerHeight(!0)+$(window).height()/2-$(".event:last").outerHeight(!0),$("#canvas-container").height(T.canvas.height),P&&P.destroy(),P=new Story(T,(!0))}function u(){var i=0;$(window).unbind("scroll").bind("scroll",function(t){var e=$(this).scrollTop();e>i?(x.direction="down",x.companion&&(x.companion.direction="down")):(x.direction="up",x.companion&&(x.companion.direction="up")),x.evenOdd=!x.evenOdd,x.isMoving=!0,x.companion&&(x.companion.evenOdd=!x.companion.evenOdd,x.companion.isMoving=!0),a(x,!0),i=e,clearTimeout($.data(this,"scrollTimer")),$.data(this,"scrollTimer",setTimeout(function(){x.isMoving=!1,a(x),x.companion&&(x.companion.isMoving=!1)},100))})}function v(){$(window).unbind("scroll")}var f=!1;(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4)))&&(f=!0);var y=(navigator.userAgent.toLowerCase().indexOf("firefox")>-1,$("#window").width()<=768,$(window).height()/2),x=new Kelvien,M=$("#canvas-container"),b=$("#canvas"),T=b[0].getContext("2d");o(),setTimeout(function(){$("#canvas-container").css({visibility:"visible"}),$("#preload").css({opacity:0}).remove(),$("#main").css({opacity:1})},2e3),$(window).on("resize",function(i){o()}),$("#contact-option li").on("click",function(){$("#contact-option li").removeClass("active"),$(this).addClass("active")});var k,P});
+var userAgent = window.navigator.userAgent;
+var isIE = userAgent.indexOf('MSIE ');
+if (isIE > 0 && parseInt(userAgent.substring(isIE + 5, userAgent.indexOf('.', isIE))) < 11) {
+	$.each($('#Kelvien').children(), function(i ,e) {
+		$(e).find("use[fill='black']").removeAttr('xlink:href');
+	});
+}
+
+// RAF Fallback handler
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var Kelvien = function() {
+	this.element = $('#kelvien');
+	this.me = this.element[0];
+	this.oriMarginLeft = Math.abs(parseInt(this.element.css('margin-left')));
+	this.initialPositionX = parseInt(this.element.css('left'));
+	this.initialPositionY = parseInt(this.element.css('top'));
+
+	this.movingThreshold = 8; // Multiple of 2 ONLY
+	this.movingCount = this.movingThreshold;
+
+	this.isMoving;
+	this.evenOdd;
+	this.direction = 'down';
+	this.state = 'normal';
+}
+
+var Companion = function(el) {
+	this.element = el;
+	this.me = this.element[0];
+
+	this.isMoving;
+	this.evenOdd;
+	this.direction = 'down';
+}
+
+var Tile = function(img, name, x, y, deg, flipH) {
+	this.src = img;
+	this.name = name;
+	// This x and y is inclusive (0) when we are looking at the sprite image
+	this.x = x;
+	this.y = y;
+
+	this.posX;
+	this.posY;
+
+	this.deg = deg;
+	this.flipH = flipH;
+	this.processedTile = this.processTile(this);
+	this.img = this.processedTile;
+
+	this.neighbors = [];
+}
+
+Tile.prototype.processTile = function(el) {
+	var offscreenCanvas = document.createElement('canvas');
+	var offscreenCtx = offscreenCanvas.getContext('2d');
+	offscreenCanvas.width = 32;
+	offscreenCanvas.height = 32;
+
+	var img;
+	if (el.deg != 0) {
+		offscreenCtx.translate(32 / 2, 32 / 2);
+		offscreenCtx.rotate(this.deg * Math.PI/180);
+
+		offscreenCtx.drawImage(this.src, this.x, this.y, 32, 32, -(32 / 2), -(32 / 2), 32, 32);
+	} else {
+		offscreenCtx.drawImage(this.src, this.x, this.y, 32, 32, 0, 0, 32, 32);
+	}
+	if (this.flipH) {
+		offscreenCtx.translate(32, 0);
+		offscreenCtx.scale(-1, 1);
+		offscreenCtx.drawImage(offscreenCanvas, 0, 0);
+	}
+	return offscreenCanvas;
+}
+
+var Item = function(img, name, x, y, w, h) {
+	this.src = img;
+	this.name = name;
+	// This x and y is inclusive (0) when we are looking at the sprite image
+	this.x = x;
+	this.y = y;
+
+	this.w = w;
+	this.h = h;
+
+	this.i;
+	this.j;
+
+	this.processedItem = this.processItem(this);
+	this.img = this.processedItem;
+}
+
+Item.prototype.processItem = function() {
+	var offscreenCanvas = document.createElement('canvas');
+	var offscreenCtx = offscreenCanvas.getContext('2d');
+	offscreenCanvas.width = this.w;
+	offscreenCanvas.height = this.h;
+
+	offscreenCtx.drawImage(this.src, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h);
+	return offscreenCanvas;
+}
+
+var Character = function(img, name, w, h, direction, imgJson) {
+	this.src = img;
+	this.name = name;
+
+	this.w = w;
+	this.h = h;
+
+	this.evenOdd;
+	this.direction = direction;
+	this.isMoving;
+
+	this.json = imgJson
+
+	this.processedCharacter = this.processCharacter(this);
+	this.img = this.processedCharacter;
+
+	this.boundary;
+	this.srcPos = {
+		"x": 0,
+		"y": 0
+	};
+	this.destPos = {
+		"x": 0,
+		"y": 0
+	}
+}
+
+Character.prototype.processCharacter = function() {
+	if (this.json) {
+		var behavior = (this.isMoving) ? ((this.evenOdd) ? 'left' : 'right') : 'normal';
+		this.x = this.json[this.direction][behavior].x;
+		this.y = this.json[this.direction][behavior].y;
+	}
+
+	var offscreenCanvas = document.createElement('canvas');
+	var offscreenCtx = offscreenCanvas.getContext('2d');
+	offscreenCanvas.width = this.w;
+	offscreenCanvas.height = this.h;
+
+	offscreenCtx.drawImage(this.src, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h);
+	return offscreenCanvas;
+}
+
+var Story = function(context, anim) {
+	var alias = this;
+
+	this.cc = context;
+	this.cc.webkitImageSmoothingEnabled = false;
+	this.cc.mozImageSmoothingEnabled = false;
+	this.cc.msImageSmoothingEnabled = false;
+	this.cc.imageSmoothingEnabled = false;
+
+	this.tiles = [];
+	this.pointers = this.getPointers();
+
+	this.animation = anim;
+
+	/// TILES ///
+	this.tile = [];
+	this.loadImage();
+	// this.loadImage().then(function() {
+	// 	alias.draw();
+
+	// 	alias.setupAnimateDOM();
+	// 	alias.startAnimateLapras();
+	// });
+
+	this.item = [];
+	this.character = [];
+	this.movingCharacter = [];
+
+	this.a = [];
+	this.aPosI = [];
+	this.aPosJ = [];
+	this.aStart = [];
+	this.aDirection = [];
+
+	this.endingDirection = false;
+
+	this.oceanThreshold = 1 * 32;
+	this.adjustedI = 32 - this.position['adjustMostLeft'];
+}
+
+Story.prototype.destroy = function() {
+	window.clearTimeout(this.loopEnding);
+	window.clearInterval(this.laprasInterval);
+	window.clearInterval(this.endingInterval);
+	for (var key in this.a) {
+	  	if (this.a.hasOwnProperty(key)) {
+	  		$(this.a[key]).remove();
+	  	}
+	}
+}
+
+Story.prototype.loadImage = function() {
+	var alias = this;
+
+	// return new Promise(function(resolve, reject) {
+		var img = new Image();
+		img.src = 'assets/media/sprite.png';
+		img.onload = function() {
+			alias.tile['grass'] = new Tile(img, 'grass', 34, 226, 0);
+			alias.tile['grass1'] = new Tile(img, 'grass1', 136, 260, 0);
+			alias.tile['flower'] = new Tile(img, 'flower', 204, 192, 0);
+			alias.tile['grassMildMM'] = new Tile(img, 'grassMildMM', 204, 260, 0);
+			alias.tile['grassMildML'] = new Tile(img, 'grassMildML', 238, 260, 0);
+			alias.tile['grassMildMR'] = new Tile(img, 'grassMildMR', 238, 260, 0, 1);
+			alias.tile['grassMildTL'] = new Tile(img, 'grassMildTL', 238, 226, 0);
+			alias.tile['grassMildTM'] = new Tile(img, 'grassMildTM', 238, 192, 0);
+			alias.tile['grassMildTR'] = new Tile(img, 'grassMildTR', 238, 226, 0, 1);
+			alias.tile['grassMildBL'] = new Tile(img, 'grassMildBL', 272, 226, 0, 1);
+			alias.tile['grassMildBM'] = new Tile(img, 'grassMildBM', 238, 192, 180);
+			alias.tile['grassMildBR'] = new Tile(img, 'grassMildBR', 272, 226, 0);
+			alias.tile['rockTile'] = new Tile(img, 'rockTile', 170, 260, 0);
+			alias.tile['oceanTL'] = new Tile(img, 'oceanTL', 34, 260, 0);
+			alias.tile['oceanTM'] = new Tile(img, 'oceanTM', 102, 192, 0);
+			alias.tile['oceanTR'] = new Tile(img, 'oceanTR', 136, 192, 0);
+			alias.tile['oceanML'] = new Tile(img, 'oceanML', 136, 226, 0);
+			alias.tile['oceanMM'] = new Tile(img, 'oceanMM', 68, 192, 0);
+			alias.tile['oceanMR'] = new Tile(img, 'oceanMR', 68, 226, 0);
+			alias.tile['oceanBL'] = new Tile(img, 'oceanBL', 68, 260, 0);
+			alias.tile['oceanBM'] = new Tile(img, 'oceanBM', 102, 260, 0);
+			alias.tile['oceanBR'] = new Tile(img, 'oceanBR', 102, 226, 0);
+			alias.tile['roadTL'] = new Tile(img, 'roadTL', 0, 192, 90);
+			alias.tile['roadTM'] = new Tile(img, 'roadTM', 0, 226, 0);
+			alias.tile['roadTR'] = new Tile(img, 'roadTR', 0, 192, 180);
+			alias.tile['roadML'] = new Tile(img, 'roadML', 0, 226, -90);
+			alias.tile['roadMM'] = new Tile(img, 'roadMM', 0, 260, 90);
+			alias.tile['roadMR'] = new Tile(img, 'roadMR', 0, 226, 90);
+			alias.tile['roadBL'] = new Tile(img, 'roadBL', 0, 192, 0);
+			alias.tile['roadBM'] = new Tile(img, 'roadBM', 0, 226, 180);
+			alias.tile['roadBR'] = new Tile(img, 'roadBR', 0, 192, -90);
+
+			alias.item['tree'] = new Item(img, 'tree', 0, 56, 64, 94);
+			alias.item['home'] = new Item(img, 'home', 620, 372, 160, 128);
+
+
+			var laprasJson = {
+				"up": {
+					"left": {
+						"x": 303,
+						"y": 468
+					},
+					"normal": {
+						"x": 303,
+						"y": 468
+					},
+					"right": {
+						"x": 303,
+						"y": 468
+					}
+				},
+				"down": {
+					"left": {
+						"x": 267,
+						"y": 468
+					},
+					"normal": {
+						"x": 267,
+						"y": 468
+					},
+					"right": {
+						"x": 267,
+						"y": 468
+					}
+				},
+				"left": {
+					"left": {
+						"x": 339,
+						"y": 468
+					},
+					"normal": {
+						"x": 339,
+						"y": 468
+					},
+					"right": {
+						"x": 339,
+						"y": 468
+					}
+				},
+				"right": {
+					"left": {
+						"x": 375,
+						"y": 468
+					},
+					"normal": {
+						"x": 375,
+						"y": 468
+					},
+					"right": {
+						"x": 375,
+						"y": 468
+					}
+				}
+			};
+			alias.character['lapras'] = new Character(img, 'lapras', 32, 32, 'left', laprasJson);
+
+			alias.character['dad'] = new Character(img, 'dad', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 323}}});
+			alias.character['mom'] = new Character(img, 'mom', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 367}}});
+			alias.character['tiff'] = new Character(img, 'tiff', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 412}}});
+			alias.character['nic'] = new Character(img, 'nic', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 456}}});
+
+			// resolve(img);
+			alias.draw();
+
+			alias.setupAnimateDOM();
+			alias.startAnimateLapras();
+		}
+	// }).then(function(img) {
+	// 	return new Promise(function(resolve, reject) {
+
+	// 		resolve();
+	// 	});
+	// });
+}
+
+Story.prototype.getPointers = function() {
+	// Get Kelvien position
+	this.position = [];
+
+	this.position['windowW'] = $(window).width();
+	this.position['windowH'] = $(window).width();
+	this.position['canvasH'] = $('#canvas').height();
+
+	this.position['kelvienT'] = $('#kelvien').offset().top;
+	this.position['kelvien'] = $('#kelvien').offset().left;
+	this.position['adjustMostLeft'] = this.position['kelvien'] % 32;
+
+	this.position['start'] = $("#timeline-gap").offset().top;
+	this.position['ocean'] = $(".event[data-event='fly']:first").offset().top;
+	this.position['oceanH'] = $(".event[data-event='fly']:first").outerHeight(true) + $(".event[data-event='fly']:last").outerHeight(true);
+	this.position['ending'] = $(".event:last").offset().top;
+	this.position['endingH'] = $(".event:last").outerHeight(true);
+}
+
+Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC) {
+	character.srcPos['i'] = i;
+	character.srcPos['j'] = j;
+
+	character.boundary = boundary;
+	if (movingNPC) {
+		this.movingCharacter[character.name] = character;
+	}
+
+	this.character.push(character);
+}
+
+Story.prototype.setupAnimateDOM = function() {
+	var container = $('#canvas-container');
+
+	var lapras = $('<div>');
+	var laprasLastI = this.position['windowW'] / 2;
+	var laprasLastJ = this.position['ocean'] + (3 * this.oceanThreshold);
+	lapras.attr('id', 'lapras');
+	lapras.css({
+		"position": 'absolute',
+		"background": 'url(assets/media/sprite.png)',
+		"background-position": '-375px -468px', // right
+		"width": 32,
+		"height": 32,
+		"top": laprasLastJ,
+		"right": laprasLastI
+	});
+	container.append(lapras);
+	this.a['lapras'] = lapras;
+	this.aPosI['lapras'] = laprasLastI;
+	this.aPosJ['lapras'] = laprasLastJ;
+	this.aDirection['lapras'] = 'right';
+
+	var latias = $('<div>');
+	var latiasLastI = -62;
+	latias.attr('id', 'latias');
+	latias.css({
+		"position": 'absolute',
+		"background": 'url(assets/media/sprite.png)',
+		"background-position": '-455px -448px',
+		"width": 56,
+		"height": 52,
+		"top": this.position['ending'] + 64,
+		"right": latiasLastI
+	});
+	container.append(latias);
+	this.a['latias'] = latias;
+
+	var latios = $('<div>');
+	var latiosLastI = -112;
+	latios.attr('id', 'latias');
+	latios.css({
+		"position": 'absolute',
+		"background": 'url(assets/media/sprite.png)',
+		"background-position": '-520px -448px',
+		"width": 56,
+		"height": 52,
+		"top": this.position['ending'] + 96,
+		"right": latiosLastI
+	});
+	container.append(latios);
+	this.a['latios'] = latios;
+}
+
+Story.prototype.stopAnimateLapras = function() {
+	this.isAnimateLapras = false;
+}
+
+Story.prototype.startAnimateLapras = function() {
+	this.isAnimateLapras = true;
+
+	if (!this.laprasInterval) {
+		this.animateLapras();
+	}
+}
+
+Story.prototype.animateLapras = function() {
+	var alias = this;
+
+	var step = 1;
+	var laprasGoToI;
+	var laprasGoToJ;
+	var bg;
+	if (alias.aDirection['lapras'] == 'left') {
+		laprasGoToI = alias.aPosI['lapras'] - step;
+	 	laprasGoToJ = alias.aPosJ['lapras'];
+
+	 	if (laprasGoToI - 96 <= 0) {
+			alias.aDirection['lapras'] = 'up';
+			bg = '-303px -468px';
+		}
+	} else if (alias.aDirection['lapras'] == 'right') {
+		laprasGoToI = alias.aPosI['lapras'] + step;
+		laprasGoToJ = alias.aPosJ['lapras'];
+
+		if (laprasGoToI + 96 >= alias.position['windowW']) {
+			alias.aDirection['lapras'] = 'down';
+			bg = '-267px -468px';
+		}
+	} else if (alias.aDirection['lapras'] == 'up') {
+		laprasGoToI = alias.aPosI['lapras'];
+		laprasGoToJ = alias.aPosJ['lapras'] - step;
+
+		if (laprasGoToJ - 96 <= alias.position['ocean']) {
+			alias.aDirection['lapras'] = 'right';
+			bg = '-375px -468px';
+		}
+	} else if (alias.aDirection['lapras'] == 'down') {
+		laprasGoToI = alias.aPosI['lapras'];
+		laprasGoToJ = alias.aPosJ['lapras'] + step;
+
+		if (laprasGoToJ + 96 >= alias.position['ocean'] + alias.position['oceanH']) {
+			alias.aDirection['lapras'] = 'left';
+			bg = '-339px -468px';
+		}
+	}
+
+	alias.aPosI['lapras'] = laprasGoToI;
+	alias.aPosJ['lapras'] = laprasGoToJ;
+	alias.a['lapras'].css({
+		"background-position": bg,
+		"top": laprasGoToJ,
+		"left": laprasGoToI
+	});
+
+	alias.laprasInterval = requestAnimationFrame(function() {
+		alias.animateLapras();
+	});
+}
+
+Story.prototype.stopAnimateEnding = function () {
+	this.isAnimateEnding = false;
+
+	clearTimeout(this.loopEnding);
+	this.loopEnding = undefined;
+}
+
+Story.prototype.startAnimateEnding = function () {
+	this.isAnimateEnding = true;
+	this.loopEnding = true;
+	if (!this.endingInterval) {
+		this.aStart['latias'] = -62;
+		this.aStart['latios'] = -112;
+		this.aPosI['latias'] = this.aStart['latias'];
+		this.aPosI['latios'] = this.aStart['latios'];
+		this.animateEnding();
+	}
+}
+
+Story.prototype.animateEnding = function() {
+	var alias = this;
+	if (alias.a['latias'] && alias.a['latios']) {
+		var latiasGoTo = alias.aPosI['latias'] + 6.1;
+
+		alias.aPosI['latias'] = latiasGoTo;
+		alias.a['latias'].css({
+			"right": latiasGoTo
+		});
+
+		var latiosGoTo = alias.aPosI['latios'] + 6;
+		if (latiosGoTo >= alias.position['windowW'] + 100) {
+			window.cancelAnimationFrame(alias.endingInterval);
+			alias.endingInterval = undefined;
+
+			if (alias.loopEnding) {
+				alias.loopEnding = setTimeout(function() {
+					alias.a['latias'].css({
+						"right": alias.aStart['latias']
+					});
+					alias.aPosI['latias'] = alias.aStart['latias'];
+					alias.a['latios'].css({
+						"right": alias.aStart['latios']
+					});
+					alias.aPosI['latios'] = alias.aStart['latios'];
+					alias.animateEnding();
+				}, 20000);
+			}
+		} else {
+			alias.aPosI['latios'] = latiosGoTo;
+			alias.a['latios'].css({
+				"right": latiosGoTo
+			});
+
+			alias.endingInterval = requestAnimationFrame(function() {
+				alias.animateEnding();
+			});
+		}
+	}
+}
+
+Story.prototype.stopAnimation = function() {
+	this.animation = false;
+}
+
+Story.prototype.animateLaprasCanvas = function() {
+	var fps = 17;
+	var alias = this;
+
+	var char = this.movingCharacter['lapras'];
+
+	// Draw before and after character tile and update position
+	var tile, tileNeighbor;
+
+	switch (char.direction) {
+		case 'up':
+			if (char.srcPos.j <= char.boundary.ja) {
+				char.direction = 'left';
+			} else {
+				char.srcPos.j -= 1/fps;
+			}
+
+			if (char.srcPos.j % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j + 1][char.srcPos.i];
+			} else {
+				tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'down':
+			if (char.srcPos.j >= char.boundary.jz) {
+				char.direction = 'right';
+			} else {
+				char.srcPos.j += 1/fps;
+			}
+			if (char.srcPos.j % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j - 1][char.srcPos.i];
+			} else {
+				tile = this.tiles[Math.floor(char.srcPos.j)][char.srcPos.i];
+				tileNeighbor = this.tiles[Math.ceil(char.srcPos.j)][char.srcPos.i];
+			}
+		break;
+		case 'left':
+			if (char.srcPos.i <= char.boundary.ia) {
+				char.direction = 'down';
+			} else {
+				char.srcPos.i -= 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i + 1];
+			} else {
+				tileNeighbor = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tile = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
+		case 'right':
+			if (char.srcPos.i >= char.boundary.iz) {
+				char.direction = 'up';
+			} else {
+				char.srcPos.i += 1/fps;
+			}
+			if (char.srcPos.i % 1 == 0) {
+				tile = this.tiles[char.srcPos.j][char.srcPos.i];
+				tileNeighbor = this.tiles[char.srcPos.j][char.srcPos.i - 1];
+			} else {
+				tile = this.tiles[char.srcPos.j][Math.floor(char.srcPos.i)];
+				tileNeighbor = this.tiles[char.srcPos.j][Math.ceil(char.srcPos.i)];
+			}
+		break;
+	}
+	// Draw src-dest floor
+	this.cc.drawImage(tile.img, 0, 0, 32, 32, (tile.i * 32) - this.adjustedI, tile.j * 32, 33, 33);
+	this.cc.drawImage(tileNeighbor.img, 0, 0, 32, 32, (tileNeighbor.i * 32) - this.adjustedI, tileNeighbor.j * 32, 33, 33);
+
+	// Draw character after movement
+	char.img = char.processCharacter(char);
+	this.cc.drawImage(char.img, 0, 0, char.w, char.h, (char.srcPos.i * 32) - this.adjustedI, char.srcPos.j * 32, char.w, char.h);
+
+	requestAnimationFrame(function() {
+		alias.animateLapras();
+	});
+
+}
+
+Story.prototype.draw = function() {
+	// Draw floor tile from top to bottom
+	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
+		this.tiles[j] = [];
+		// 1 is for scrollbar placeholder in mobile devices
+		for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {
+			var tile = null;
+
+			var adjustedI = i * 32;
+			var adjustedJ = j * 32;
+			adjustedI = adjustedI - this.adjustedI;
+
+			// ROAD
+			var roadThreshold = 1 * 32;
+			if (adjustedJ > this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
+				||
+				adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + 64) {
+				// Before and after ocean
+				if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
+					||
+					adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTM']; // TM
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+						tile = this.tile['grassMildBM']; // BM
+					} else {
+						tile = this.tile['grassMildMM']; // MM
+					}
+				} else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTR']; // TR
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+						tile = this.tile['grassMildBR']; // BR
+					} else {
+						tile = this.tile['grassMildMR']; // MR
+					}
+				} else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
+					if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
+						tile = this.tile['grassMildTL']; // TL
+					} else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+						tile = this.tile['grassMildBL']; // BL
+					} else {
+						tile = this.tile['grassMildML']; // ML
+					}
+				} else {
+					tile = this.tile['grass1'];
+				}
+			} else if (adjustedJ - this.oceanThreshold >= this.position['ocean'] && adjustedJ + this.oceanThreshold <= this.position['ocean'] + this.position['oceanH']) {
+				// Ocean
+				if (adjustedJ - (this.oceanThreshold + 32) < this.position['ocean'] && adjustedJ - this.oceanThreshold >= this.position['ocean']) {
+					if (adjustedI <= 0) {
+						tile = this.tile['oceanTL'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						tile = this.tile['oceanTR'];
+					} else {
+						tile = this.tile['oceanTM'];
+					}
+				} else if (adjustedJ + (this.oceanThreshold + 32) >= this.position['ocean'] + this.position['oceanH']) {
+					if (adjustedI <= 0) {
+						tile = this.tile['oceanBL'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						tile = this.tile['oceanBR'];
+					} else {
+						tile = this.tile['oceanBM'];
+					}
+				} else {
+					if (adjustedI <= 0) {
+						tile = this.tile['oceanML'];
+					} else if (adjustedI + 32 > this.position['windowW']) {
+						tile = this.tile['oceanMR'];
+					} else {
+						tile = this.tile['oceanMM'];
+					}
+				}
+			} else if (false) {
+				// Ending
+				tile = this.tile['grass1'];
+			} else {
+				tile = this.tile['grass1'];
+			}
+
+			// Register top, left, right, and bottom's tile on each other
+			// this.tiles[j][i] = this.registerTile(tile, i, j);
+
+			// Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
+			// draw width and height are higher than the actual because Safari does not process floating point position (i,j)
+			this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
+		}
+	}
+	// Items
+
+	// Tree
+	var tree = this.item['tree'];
+	var treeC = 5;
+	var windowR = getIOrJ(this.position['windowW']);
+	var windowB = getIOrJ(this.position['canvasH']);
+	var oceanT = getIOrJ(this.position['ocean']);
+	var oceanB = oceanT + getIOrJ(this.position['oceanH']);
+	var baseJ = 0;
+	var baseI = 0;
+
+	for (var j = 0; j < this.cc.canvas.height / 32; j++) {
+		// 1 is for scrollbar placeholder in mobile devices
+		for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {
+			if (((this.position['windowW'] > 768 && baseI < treeC) || (this.position['windowW'] > 992 && baseI + treeC > windowR) || baseJ < treeC || baseJ + treeC > windowB) && (baseJ < oceanT || baseJ > oceanB)) {
+				var diff = (i % 2 == 0) ? 32 : 0;
+				this.cc.drawImage(tree.img, 0, 0, tree.w, tree.h, (i * 64) - this.position['adjustMostLeft'], (j * 64) - diff, tree.w, tree.h);
+			}
+			baseI += 2;
+		}
+		baseJ += 2;
+		baseI = 0;
+	}
+
+	var home = this.item['home'];
+	var homeI = getIOrJ(this.position['kelvien'] + 64);
+	var homeJ = getIOrJ(this.position['kelvienT'] - home.h);
+	this.cc.drawImage(home.img, 0, 0, home.w, home.h, homeI * 32, homeJ * 32, home.w, home.h);
+
+	// Family
+	var dad = this.character['dad'];
+	var mom = this.character['mom'];
+	var tiff = this.character['tiff'];
+	var nic = this.character['nic'];
+	var afterHomeJ = getIOrJ(this.position['kelvienT']);
+	this.cc.drawImage(dad.img, 0, 0, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
+	this.cc.drawImage(mom.img, 0, 0, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
+	this.cc.drawImage(tiff.img, 0, 0, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
+	this.cc.drawImage(nic.img, 0, 0, nic.w, nic.h, (homeI + 4) * 32, (afterHomeJ * 32) - 8, nic.w, nic.h);
+
+}
+
+function getIOrJ(t) {
+	var i = -1;
+	var count = 0;
+	while(count < t) {
+		i++;
+		count += 32;
+	}
+	return i;
+}
+
+Story.prototype.registerTile = function(tile, i, j) {
+	var tempTile = $.extend(true, {}, tile);
+	tempTile.i = i;
+	tempTile.j = j;
+
+	if (j != 0) {
+		this.tiles[j-1][i].neighbors.bottom = tempTile;
+		tempTile.neighbors.top = this.tiles[j-1][i];
+	}
+	if (i != 0) {
+		this.tiles[j][i-1].neighbors.right = tempTile;
+		tempTile.neighbors.left = this.tiles[j][i-1];
+	}
+
+	return tempTile;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+$('#preload').show();
+$('#main').show();
+
+$(window).on('load', function(){
+	/*Reference: http://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery*/
+	var isMobile = false;
+	if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
+	|| /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) {
+		isMobile = true;
+	}
+	var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+	var useFixedMenu = $('#window').width() <= 768;
+
+	var midWindow = $(window).height() / 2;
+	var kelvien = new Kelvien();
+	var cC = $('#canvas-container');
+	var c = $('#canvas');
+	var cc = c[0].getContext('2d');
+
+	main();
+	// Remove preload
+	setTimeout(function() {
+		$('#canvas-container').css({
+			"visibility": 'visible'
+		});
+		$('#preload').css({
+			"opacity": 0
+		}).remove();
+		$('#main').css({
+			"opacity": 1
+		});
+	}, 2000);
+
+	$(window).on('resize', function(e) {
+		main();
+	});
+
+	function registerMenu() {
+		var duration = 1000;
+		$('#menu-container li').unbind('click').bind('click', function() {
+
+			var extraAfterTrigger = 2;
+			var to = 0;
+			switch($(this).data('menu')) {
+				case 'about':
+					to = 0;
+					break;
+				case 'story':
+					to = $(".event:first").offset().top - ($(window).height() / 2) + extraAfterTrigger;
+					break;
+				case 'contact':
+					to = $('body').height();
+					break;
+				default:
+					to = 0;
+					break;
+			}
+
+			$('html, body').animate({
+		        scrollTop: to
+		    }, duration);
+		});
+	}
+
+	function chooseMenu(menu) {
+		$('#menu-container li').removeClass('active');
+		$("#menu-container li[data-menu='" + menu + "']").addClass('active');
+	}
+
+	$('#contact-option li').on('click', function() {
+		$('#contact-option li').removeClass('active');
+		$(this).addClass('active');
+	})
+
+	function adjustMain() {
+		var aboutHeight = $('#about').outerHeight(true) + $('#scroll-helper').outerHeight(true);
+		var totalHeight = (window.innerWidth < 768) ? $('#fixed-menu').outerHeight(true) + aboutHeight : aboutHeight;
+		var marginTop = (window.innerHeight < totalHeight) ? 0 : Math.max(0, (window.innerHeight - totalHeight) / 2);
+		$('#main').css('padding-top', marginTop);
+	}
+
+	function addFixedMenuMask() {
+		/* Bootstrap MD down */
+		if (window.innerWidth < 768) {
+			if (!$('#menu-mask').length) {
+				var mask = $('<div></div>').attr('id', 'menu-mask').height($('#fixed-menu').outerHeight(true));
+				$('#about-container').before(mask);
+			}
+		} else {
+			if ($('#menu-mask').length) {
+				$('#menu-mask').remove();
+			}
+		}
+	}
+
+	function addCanvasMask() {
+		if (!$('#canvasMask').length) {
+			var mainHeight = $('#main').outerHeight(true);
+			var mainOffsetWithWindow = Math.abs(window.innerHeight - mainHeight);
+			var height = (mainHeight > window.innerHeight) ? mainHeight - mainOffsetWithWindow : mainHeight + mainOffsetWithWindow
+
+			var mask = $('<div></div>').attr('id', 'canvasMask').height(height);
+			$('#main').after(mask);
+		}
+	}
+
+	var controller;
+
+	function main() {
+		adjustMain();
+		addFixedMenuMask();
+
+		if (controller) {
+			controller = controller.destroy(1);
+			controller = undefined;
+		}
+		controller = new ScrollMagic.Controller({addIndicators: true});
+		arrangeTimeline();
+		arrangeBg();
+	}
+
+	function changeCompanionBg(companion, moving) {
+		var bg = '';
+		var behindChar = 38;
+		var top = -36;
+
+		if (moving) {
+			if (companion.direction == 'up') {
+				bg = (companion.evenOdd) ? '-133px -460px' : '-221px -460px';
+				top = behindChar;
+			} else {
+				bg = (companion.evenOdd) ? '-5px -460px' : '-91px -460px';
+				top = top;
+			}
+		} else {
+			if (companion.direction == 'up') {
+				bg = '-177px -460px';
+				top = behindChar;
+			} else {
+				bg = '-47px -460px';
+				top = top;
+			}
+		}
+		companion.element.css({
+			"top": top,
+			"background-position": bg
+		});
+	}
+
+	function changeBg(character) {
+		var bg = "";
+
+		if (character.isMoving) {
+			if (character.movingCount > 0) {
+				character.movingCount--;
+			} else {
+				character.movingCount = character.movingThreshold;
+				bg += stateBg(character, true);
+
+				adjustKelvienX();
+				character.element.css({
+					"background-position": bg
+				});
+				if (character.companion) {
+					changeCompanionBg(character.companion, true);
+				}
+			}
+		} else {
+			bg += stateBg(character, false);
+
+			adjustKelvienX();
+			character.element.css({
+				"background-position": bg
+			});
+			if (character.companion) {
+				changeCompanionBg(character.companion, false);
+			}
+		}
+	}
+
+	function stateBg(character, moving) {
+		if (moving) {
+			switch(character.state) {
+				case 'fly':
+					character.element.css({
+						"width": 48,
+						"height": 80
+					});
+					switch(character.direction) {
+						case 'up':
+							return (character.evenOdd) ? '-626px -150px' : '-673px -150px';
+						case 'down':
+							return (character.evenOdd) ? '-578px -150px' : '-531px -150px';
+							break;
+					}
+					break;
+				case 'done':
+					character.element.css({
+						"width": 32,
+						"height": 40
+					});
+					return '-384px -150px';
+				default:
+					character.element.css({
+						"width": 32,
+						"height": 40
+					});
+					switch(character.direction) {
+						case 'up':
+							if (character.evenOdd) {
+								return '-192px -150px';
+							} else {
+								return '-224px -150px';
+							}
+							break;
+						case 'down':
+							if (character.evenOdd) {
+								return '-129px -150px';
+							} else {
+								return '-159px -150px';
+							}
+					}
+			}
+		} else {
+			switch(character.state) {
+				case 'fly':
+					character.element.css({
+						"width": 48,
+						"height": 80
+					});
+					switch(character.direction) {
+						case 'up':
+							return '-626px -150px';
+						case 'down':
+							return '-578px -150px';
+					}
+				case 'done':
+					character.element.css({
+						"width": 32,
+						"height": 40
+					});
+					return '-384px -150px';
+				default:
+					character.element.css({
+						"width": 32,
+						"height": 40
+					});
+					switch(character.direction) {
+						case 'up':
+							return '-32px -150px';
+						case 'down':
+							return '0 -150px';
+					}
+			}
+		}
+	}
+
+	function showCompanion(character) {
+		var companion = character.element.find('#companion');
+		character.companion = new Companion(companion);
+
+		companion.css({
+			"opacity": 1
+		});
+	}
+
+	function removeCompanion(character) {
+		if (character.companion) {
+			character.companion.element.css({
+				"opacity": 0
+			});
+		}
+	}
+
+	function showDialog(character, type) {
+		var dialogBox = character.element.find('.dialog-box');
+
+		var bg;
+		var anim;
+		switch(type) {
+			case 'love':
+				bg = '0 -424px';
+				anim = 'love';
+				break;
+			case 'smile':
+				bg = '-64px -424px';
+				anim = 'smile';
+				break;
+		}
+		anim += ' 1s steps(2) infinite';
+		dialogBox.css({
+			"background-position": bg,
+			"animation": anim,
+			"opacity" : 1
+		});
+	}
+
+	function removeDialog(character) {
+		var dialogBox = character.element.find('.dialog-box');
+		dialogBox.css({
+			opacity: 0
+		})
+	}
+
+	function arrangeKelvien() {
+		var scene = new ScrollMagic.Scene({
+			triggerElement: '#timeline-gap',
+			duration: $('#timeline').height() - $('.event:last').outerHeight(true),
+			reverse: true
+	    })
+	    .setPin('#kelvien')
+	    .on('start enter', function() {
+	    	addScroll();
+    		cC.css({
+	    		"opacity": 1
+	    	});
+	    	$('#scroll-helper').css({
+	    		"opacity": 0
+	    	});
+	    	$('#about').css({
+	    		"opacity": 0
+	    	});
+	    	chooseMenu('story');
+	    })
+	    .on('leave', function() {
+	    	removeScroll();
+	    	if (controller.info('scrollDirection') == 'REVERSE') {
+	    		kelvien.direction = 'down';
+	    		changeBg(kelvien, true);
+	    		cC.css({
+		    		"opacity": 0
+		    	});
+	    	}
+	    	$('#scroll-helper').css({
+	    		"opacity": 1
+	    	});
+	    	$('#about').css({
+	    		"opacity": 1
+	    	});
+	    	chooseMenu('about');
+	    })
+	    .addTo(controller);
+	}
+
+	function adjustKelvienX() {
+		kelvien.element.css({
+			"margin-left": -((kelvien.element.width() / 2) - kelvien.oriMarginLeft)
+		});
+	}
+
+	function arrangeTimeline() {
+		var evenOdd;
+
+		$.each($('.event'), function(i, e) {
+			$(e).removeClass('event-right').removeClass('event-left').css({
+				"left": '',
+				"right": ''
+			});
+			var mid = $('#timeline').width() / 2;
+			/* Bootstrap SM down */
+			if (window.innerWidth <= 576) {
+				$(e).addClass('event-right').removeClass('event-left');
+				var offset = $('#timeline').width() - $(e).outerWidth();
+				$(e).css({
+					"left": -offset
+				});
+			} else {
+				if (evenOdd) {
+					$(e).addClass('event-left');
+					var sideOffset = mid - $(e).outerWidth();
+					$(e).css({
+						"right": -sideOffset
+					});
+				} else {
+					$(e).addClass('event-right');
+					var sideOffset = mid - $(e).outerWidth();
+					$(e).css({
+						"left": -sideOffset
+					});
+				}
+				evenOdd = !evenOdd;
+			}
+
+			var element = '.event:eq(' + i + ')';
+			var scene = new ScrollMagic.Scene({
+				triggerElement: element,
+				triggerOffset: midWindow,
+				duration: $(e).outerHeight(true),
+				reverse: true
+			})
+			.on('enter', function () {
+				$(e).css('opacity', 1);
+			})
+			.on('leave', function() {
+				if (controller.info('scrollDirection') == 'REVERSE') {
+					$(e).css('opacity', 0);
+				}
+			});
+
+			scene.on('enter', function() {
+				switch($(e).data('event')) {
+					case 'normal':
+						kelvien.state = 'normal';
+						break;
+					case 'fly':
+						kelvien.state = 'fly';
+						removeCompanion(kelvien);
+						break;
+					case 'companion':
+						kelvien.state = 'companion';
+						showCompanion(kelvien);
+						break;
+					case 'love':
+						showDialog(kelvien, 'love');
+						break;
+					case 'sweat':
+						removeCompanion(kelvien);
+						break;
+					case 'projectKelvien':
+						kelvien.state = 'normal';
+						showCompanion(kelvien);
+						break;
+					case 'contact':
+						chooseMenu('contact');
+						removeCompanion(kelvien);
+						showDialog(kelvien, 'smile');
+						kelvien.state = 'done';
+						changeBg(kelvien, false);
+
+						story.startAnimateEnding();
+						break;
+					default:
+						kelvien.state = 'normal';
+						break;
+				}
+			})
+			scene.on('leave', function() {
+				switch($(e).data('event')) {
+					case 'contact':
+						story.stopAnimateEnding();
+						break;
+				}
+				removeDialog(kelvien);
+			});
+			scene.addTo(controller);
+		});
+
+		arrangeKelvien();
+		registerMenu();
+	}
+
+	var story;
+	function arrangeBg() {
+		// Can't just be firefox, enabling for all, must scroll to most bottom for contact though
+		var h = 50;
+		cc.canvas.width = $(window).width();
+		cc.canvas.height = h + $('#main').outerHeight(true) + ($(window).height() / 2) - $('.event:last').outerHeight(true);
+		$('#canvas-container').height(cc.canvas.height);
+
+		if (story) {
+			story.destroy();
+		}
+		story = new Story(cc, true);
+	}
+
+	function addScroll() {
+		var lastScrollTop = 0;
+		$(window).unbind('scroll').bind('scroll', function(event){
+			var st = $(this).scrollTop();
+			if (st > lastScrollTop){
+				kelvien.direction = 'down';
+				if (kelvien.companion) {
+					kelvien.companion.direction = 'down';
+				}
+			} else {
+				kelvien.direction = 'up';
+				if (kelvien.companion) {
+					kelvien.companion.direction = 'up';
+				}
+			}
+			kelvien.evenOdd = !kelvien.evenOdd;
+			kelvien.isMoving = true;
+			if (kelvien.companion) {
+				kelvien.companion.evenOdd = !kelvien.companion.evenOdd;
+				kelvien.companion.isMoving = true;
+			}
+
+			changeBg(kelvien, true);
+
+			lastScrollTop = st;
+
+			clearTimeout($.data(this, 'scrollTimer'));
+		    $.data(this, 'scrollTimer', setTimeout(function() {
+		    	kelvien.isMoving = false;
+		    	changeBg(kelvien);
+		    	if (kelvien.companion) {
+		    		kelvien.companion.isMoving = false;
+		    	}
+		    }, 100));
+		});
+	}
+
+	function removeScroll() {
+		$(window).unbind('scroll');
+	}
+});

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "gulp": "3.9.1",
+    "gulp-html-minifier": "0.1.8",
+    "gulp-clean-css": "3.7.0",
+    "gulp-uglify": "3.0.0",
+    "gulp-util": ">= 0.10"
+  }
+}

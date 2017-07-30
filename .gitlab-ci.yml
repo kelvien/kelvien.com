@@ -1,8 +1,27 @@
+image: node:4.2.2
+
+stages:
+  - build
+  - deploy
+
+minify:
+  stage: build
+  script:
+  - npm install
+  - gulp --production
+  - mkdir .public
+  - cp -r {index.html,dist} .public
+  artifacts:
+    paths:
+    - .public
+  only:
+  - master
+
 pages:
   stage: deploy
+  dependencies:
+  - minify
   script:
-  - mkdir .public
-  - cp -r * .public
   - mv .public public
   artifacts:
     paths:
