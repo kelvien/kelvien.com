@@ -11,13 +11,12 @@ stages:
 minify:
   stage: build
   before_script:
-  - npm install -g gulp
-  - npm install --save-dev gulp
+  - npm install -g --save-dev gulp
   - npm install
   script:
   - gulp --production
   - mkdir .public
-  - cp -r {index.html,dist} .public
+  - cp -r {dist/*} .public
   artifacts:
     paths:
     - .public
