@@ -226,7 +226,7 @@ Story.prototype.loadImage = function() {
 
 	// return new Promise(function(resolve, reject) {
 		var img = new Image();
-		img.src = 'assets/media/sprite.png';
+		img.src = 'dist/media/sprite.png';
 		img.onload = function() {
 			alias.tile['grass'] = new Tile(img, 'grass', 34, 226, 0);
 			alias.tile['grass1'] = new Tile(img, 'grass1', 136, 260, 0);
