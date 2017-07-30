@@ -8,14 +8,14 @@ minify:
   stage: build
   script:
   - npm install
-  - node minify.js
+  - gulp --production
   - mkdir .public
-  - cp -r {index.html,assets} .public
+  - cp -r {index.html,dist} .public
   artifacts:
     paths:
     - .public
   only:
-  - next
+  - master
 
 pages:
   stage: deploy
