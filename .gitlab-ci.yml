@@ -11,6 +11,7 @@ stages:
 minify:
   stage: build
   before_script:
+  - npm install -g gulp
   - npm install
   script:
   - gulp --production
