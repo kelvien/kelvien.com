@@ -383,7 +383,7 @@ Story.prototype.setupAnimateDOM = function() {
 	lapras.attr('id', 'lapras');
 	lapras.css({
 		"position": 'absolute',
-		"background": 'url(assets/media/sprite.png)',
+		"background": 'url(dist/media/sprite.png)',
 		"background-position": '-375px -468px', // right
 		"width": 32,
 		"height": 32,
@@ -401,7 +401,7 @@ Story.prototype.setupAnimateDOM = function() {
 	latias.attr('id', 'latias');
 	latias.css({
 		"position": 'absolute',
-		"background": 'url(assets/media/sprite.png)',
+		"background": 'url(dist/media/sprite.png)',
 		"background-position": '-455px -448px',
 		"width": 56,
 		"height": 52,
@@ -416,7 +416,7 @@ Story.prototype.setupAnimateDOM = function() {
 	latios.attr('id', 'latias');
 	latios.css({
 		"position": 'absolute',
-		"background": 'url(assets/media/sprite.png)',
+		"background": 'url(dist/media/sprite.png)',
 		"background-position": '-520px -448px',
 		"width": 56,
 		"height": 52,
