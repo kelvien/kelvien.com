@@ -1,13 +1,16 @@
+image: node:4.2.2
+
 stages:
   - build
   - deploy
 
 minify:
   stage: build
-  script: 
+  script:
+  - npm install
   - node minify.js
   - mkdir .public
-  - cp -r * .public
+  - cp -r {index.html,assets} .public
   artifacts:
     paths:
     - .public
