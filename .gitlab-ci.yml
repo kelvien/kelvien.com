@@ -1,8 +1,24 @@
-pages:
-  stage: deploy
-  script:
+stages:
+  - build
+  - deploy
+
+minify:
+  stage: build
+  script: 
+  - node minify.js
   - mkdir .public
   - cp -r * .public
+  artifacts:
+    paths:
+    - .public
+  only:
+  - next
+
+pages:
+  stage: deploy
+  dependencies:
+  - minify
+  script:
   - mv .public public
   artifacts:
     paths:
