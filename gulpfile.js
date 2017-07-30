@@ -10,7 +10,7 @@ uglify = require('gulp-uglify');
 
 gulp.task('copy', function() {
 	gulp.src(src + '/media/**/*')
-			   .pipe(gulp.dest(dst));
+			   .pipe(gulp.dest(dst + '/media'));
 	gulp.src(src + '/resume.pdf')
 		.pipe(gulp.dest(dst));
 });
