@@ -11,7 +11,8 @@ stages:
 minify:
   stage: build
   before_script:
-  - npm install -g --save-dev gulp
+  - npm install -g gulp
+  - npm install --save-dev gulp
   script:
   - gulp --production
   - mkdir .public
