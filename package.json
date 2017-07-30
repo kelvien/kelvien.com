@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "preinstall": "npm install -g gulp"
+    "preinstall": "npm install -g --save-dev gulp"
   },
   "dependencies": {
     "gulp-html-minifier": "0.1.8",
