@@ -23,7 +23,7 @@ Minification:
   only:
   - master
 
-Move to public:
+pages:
   stage: deploy
   dependencies:
   - Minification
