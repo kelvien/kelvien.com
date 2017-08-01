@@ -8,7 +8,7 @@ stages:
   - build
   - deploy
 
-minify:
+Minification:
   stage: build
   before_script:
   - npm install -g gulp
@@ -23,10 +23,10 @@ minify:
   only:
   - master
 
-pages:
+Move to public:
   stage: deploy
   dependencies:
-  - minify
+  - Minification
   script:
   - mv .public public
   artifacts:
@@ -34,3 +34,5 @@ pages:
     - public
   only:
   - master
+  environment:
+    name: Production
