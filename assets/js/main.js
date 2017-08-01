@@ -834,7 +834,11 @@ $(window).on('load', function(){
 		});
 	}, 2000);
 
-	$(window).on('resize', function(e) {
+	// Orientation object
+	var mql = window.matchMedia("(orientation: portrait)");
+
+	// Add a media query change listener
+	mql.addListener(function(m) {
 		main();
 	});
 
