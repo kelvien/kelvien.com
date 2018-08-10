@@ -16,8 +16,7 @@ Minification:
   - npm install gulp --save-dev
   script:
   - gulp --production
-  - mkdir .public
-  - cp -R dist/ .public
+  - mv dist .public
   artifacts:
     paths:
     - .public
