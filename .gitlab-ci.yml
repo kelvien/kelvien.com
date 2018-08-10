@@ -17,7 +17,7 @@ Minification:
   script:
   - gulp --production
   - mkdir .public
-  - cp -r dist/* .public
+  - cp -R dist/ .public
   artifacts:
     paths:
     - .public
