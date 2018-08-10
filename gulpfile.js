@@ -9,10 +9,12 @@ cleanCSS = require('gulp-clean-css'),
 uglify = require('gulp-uglify');
 
 gulp.task('copy', function() {
-	gulp.src(src + '/assets/media/**/*')
-			   .pipe(gulp.dest(dst + '/assets/media'));
+	gulp.src(src + '/assets/media/**')
+            .pipe(gulp.dest(dst + '/assets/media'));
 	gulp.src(src + '/resume.pdf')
-		.pipe(gulp.dest(dst));
+	    .pipe(gulp.dest(dst));
+        gulp.src(src + '/.well-known/**')
+            .pipe(gulp.dest(dst + '/.well-known'));
 });
 
 gulp.task('html', function() {
