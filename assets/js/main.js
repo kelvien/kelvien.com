@@ -1465,9 +1465,9 @@ $(window).on('load', function(){
 
     var initialChat = false;
     function prepareChat() {
-        var width = $(".event:first").width();
+        var width = $(".event:first .event-content").width();
         $("#kchats").width(width);
-        $("#kguest").width(width + 35);
+        $("#kguest").width(width + $("#kelvien").width());
     }
     prepareChat();
 
