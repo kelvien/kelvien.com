@@ -889,7 +889,7 @@ $(window).on('load', function(){
 
     function isContactSubdomain() {
         var subdomain = window.location.host.split('.')[0];
-        return contactSubdomain.includes(subdomain);
+        return contactSubdomain.indexOf(subdomain) >= 0;
     }
 
     function chooseMenu(menu) {
