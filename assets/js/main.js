@@ -1485,9 +1485,9 @@ $(window).on('load', function(){
         if (!initialChat) {
             initialChat = true;
             var pre_messages = [
-                { time: 500, message: "Hi, I'm Kelvien!" },
-                { time: 1500, message: "Feel free to send me a message, if you have any questions or comments" },
-                { time: 1000, message: "You could also send me a quick hello" },
+                { time: 500, message: "Hey, I'm Kelvien!" },
+                { time: 1500, message: "I am glad that you made it here." },
+                { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
             ];
             pre_messages.reduce(function(acc, el) {
                 return acc.then(function() {
@@ -1524,7 +1524,7 @@ $(window).on('load', function(){
 });
 
 var success_messages = [
-    { time: 1000, message: "Thank you for your message!" },
+    { time: 1500, message: "Thank you for your message!" },
     { time: 2000, message: "I will get back to you as soon as possible! In the meantime, please scroll up to check out my bio/portfolio" }
 ];
 var error_message = [
@@ -1558,7 +1558,7 @@ function sendMessage() {
             var width = $("#kform").width();
             var placeholder = $("#kelvien").width() + (5 * 2);
             $("#kform").css({
-                "width": width - placeholder,
+                "display": "inline-block",
                 "left": placeholder,
             });
             var date = new Date();
