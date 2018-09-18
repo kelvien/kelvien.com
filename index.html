@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 9]>
+<!--[if lt IE 11]>
 <html class="not-supported">
 <![endif]-->
-<!--[if gt IE 9]><!-->
+<!--[if ge IE 11]><!-->
 <html>
 <!--<![endif]-->
 	<head>
@@ -353,9 +353,8 @@
                                 <div class="col-xs-12 col-sm-8 about-center">
                                     <dl class="center">
                                         <dt>Name</dt><dd>Kelvien Hidayat</dd>
-                                        <dt>Lives in</dt><dd>Albany, NY</dd>
-                                        <dt>Occupation</dt><dd>Full-stack Developer</dd>
-                                        <dt>Specialty</dt><dd>Web technologies</dd>
+                                        <dt>Location</dt><dd>Albany, NY</dd>
+                                        <dt>Occupation</dt><dd>Full-stack Software Engineer</dd>
                                         <dt>Hobby</dt><dd>Make beautiful and optimized products</dd>
                                         <dt>&#x20AC Email</dt><dd><span class="email">mas@kelvien.com</span></dd>
                                     </dl>
@@ -382,6 +381,24 @@
                         <div id="kelvien">
                             <div id="companion"></div>
                             <div><span class="dialog-box"></span></div>
+                            <div id="kchats"></div>
+                            <div id="kguest">
+                                <div id="kform-wrapper">
+                                    <div id="kform">
+                                        <div class="input-wrapper inline">
+                                            <div class="input-label inline-input"><b>Your email</b></div>
+                                            <input class="kform-input from inline-input" tabindex="1"/>
+                                        </div>
+                                        <div class="input-wrapper">
+                                            <div class="input-label"><b>Message</b></div>
+                                            <textarea class="kform-input message" tabindex="2"></textarea>
+                                        </div>
+                                    </div>
+                                    <div id="kform-submit">
+                                        <b>Send ></b>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div id="timeline-gap"></div>
                         <div class="event" id="event-first">
@@ -579,6 +596,7 @@
                                 <div class="project-tags"><b>Technology : </b>
                                     <div class="tag">PHP</div>
                                     <div class="tag">Greenplum DB</div>
+                                    <div class="tag">Kafka</div>
                                     <div class="tag">PL/SQL</div>
                                     <div class="tag">Oracle SQL</div>
                                     <div class="tag">MS SQL</div>
@@ -610,23 +628,7 @@
                             </div>
                         </div>
                         <div class="event project contact" data-event='contact'>
-                            <div class="event-title event-title-contact">
-                                <h4>Contact</h4>
-                            </div>
-                            <div class="skill-topic">
-                                <div class="skill-title">
-                                    <div class="skill-pb skill-pb-selected"></div>
-                                    <span>Kelvien Hidayat</span>
-                                    <span class="skill-indicator" title="Good experience !"></span>
-                                </div>
-                                <div class="skill-content">
-                                    <p>Contact me if you have any questions or opportunities for me.</p>
-                                    <div class="gap"></div>
-                                    <p>Email me at <a href="mailto:mas@kelvien.com"><span class="email">mas@kelvien.com</span></a></p>
-                                    <p>Or message me at <a target="_blank" href="https://www.linkedin.com/in/kelvien">Linkedin</a></p>
-                                    <p>Also, here is <a target="_blank" href="resume.pdf"> my resume</a></p>
-                                </div>
-                            </div>
+                            <div id="contact-building"></div>
                         </div>
                         <div class="clearfix"></div>
                     </div>
@@ -637,6 +639,7 @@
             <canvas id="canvas"></canvas>
             <div id="footer"><b>by Kelvien Hidayat &#x00B5 DEC 2016</b></div>
         </div>
+        <div id="transition-window"></div>
 	</body>
 
     <noscript>
@@ -650,5 +653,7 @@
     <script type="text/javascript" src="assets/js/lib/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="assets/js/lib/ScrollMagic.min.js"></script>
     <script type="text/javascript" src="assets/js/lib/jquery.ScrollMagic.min.js"></script>
+    <script type="text/javascript" src="assets/js/lib/debug.addIndicators.min.js"></script>
+    <script type="text/javascript" src="assets/js/lib/email.min.js"></script>
 	<script type="text/javascript" src="assets/js/main.js"></script>
 </html>

@@ -1,3 +1,9 @@
+const debug = false;
+const loadingTime = 0;
+const contactSubdomain = ['hey', 'localhost', '192'];
+
+var isScrolling = false;
+
 var userAgent = window.navigator.userAgent;
 var isIE = userAgent.indexOf('MSIE ');
 if (isIE > 0 && parseInt(userAgent.substring(isIE + 5, userAgent.indexOf('.', isIE))) < 11) {
@@ -329,7 +335,6 @@ Story.prototype.loadImage = function() {
             alias.character['tiff'] = new Character(img, 'tiff', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 412}}});
             alias.character['nic'] = new Character(img, 'nic', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 456}}});
 
-            // resolve(img);
             alias.draw();
 
             alias.setupAnimateDOM();
@@ -651,18 +656,20 @@ Story.prototype.draw = function() {
             var adjustedJ = j * 32;
             adjustedI = adjustedI - this.adjustedI;
 
+            var hThreshold = 128;
+
             // ROAD
             var roadThreshold = 1 * 32;
             if (adjustedJ > this.position['start'] && adjustedJ + this.oceanThreshold <= this.position['ocean']
                 ||
-                adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + 64) {
+                adjustedJ - this.oceanThreshold >= this.position['ocean'] + this.position['oceanH'] && adjustedJ <= this.position['ending'] + hThreshold) {
                 // Before and after ocean
                 if (adjustedI + roadThreshold > this.position['kelvien'] && (adjustedI <= this.position['kelvien'])
                     ||
                     adjustedI >= this.position['kelvien'] && (adjustedI - roadThreshold < this.position['kelvien'])) {
                     if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
                         tile = this.tile['grassMildTM']; // TM
-                    } else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+                    } else if (adjustedJ + roadThreshold > this.position['ending'] + hThreshold && adjustedJ < this.position['ending'] + hThreshold) {
                         tile = this.tile['grassMildBM']; // BM
                     } else {
                         tile = this.tile['grassMildMM']; // MM
@@ -670,7 +677,7 @@ Story.prototype.draw = function() {
                 } else if (adjustedI - roadThreshold <= this.position['kelvien'] && adjustedI > this.position['kelvien']) {
                     if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
                         tile = this.tile['grassMildTR']; // TR
-                    } else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+                    } else if (adjustedJ + roadThreshold > this.position['ending'] + hThreshold && adjustedJ < this.position['ending'] + hThreshold) {
                         tile = this.tile['grassMildBR']; // BR
                     } else {
                         tile = this.tile['grassMildMR']; // MR
@@ -678,7 +685,7 @@ Story.prototype.draw = function() {
                 } else if (adjustedI + roadThreshold >= this.position['kelvien'] && adjustedI < this.position['kelvien']) {
                     if (adjustedJ - roadThreshold <= this.position['kelvienT'] && adjustedJ > this.position['kelvienT']) {
                         tile = this.tile['grassMildTL']; // TL
-                    } else if (adjustedJ + roadThreshold > this.position['ending'] + 64 && adjustedJ < this.position['ending'] + 64) {
+                    } else if (adjustedJ + roadThreshold > this.position['ending'] + hThreshold && adjustedJ < this.position['ending'] + hThreshold) {
                         tile = this.tile['grassMildBL']; // BL
                     } else {
                         tile = this.tile['grassMildML']; // ML
@@ -820,26 +827,37 @@ $(window).on('load', function(){
     var c = $('#canvas');
     var cc = c[0].getContext('2d');
 
-    main();
-    // Remove preload
-    setTimeout(function() {
-        $('#canvas-container').css({
-            "visibility": 'visible'
-        });
-        $('#preload').css({
-            "opacity": 0
-        }).remove();
-        $('#main').css({
-            "opacity": 1
-        });
-    }, 2000);
+    var controller;
+    var scenes = [];
+    var triggeredOnSubdomain = false;
 
+    new Promise((resolve) => {
+        setTimeout(function() {
+            $('#canvas-container').css({
+                "visibility": 'visible'
+            });
+            $('#preload').css({
+                "opacity": 0
+            }).remove();
+            $('#main').css({
+                "opacity": 1
+            });
+            resolve();
+        }, loadingTime);
+    }).then(() => {
+        main();
+        // Move to contact portion on hey subdomain
+        if (isContactSubdomain()) {
+            $('html,body').scrollTop($('#canvas-container').height());
+        }
+    });
+    
     // Orientation object
     var mql = window.matchMedia("(orientation: portrait)");
 
     // Add a media query change listener
     mql.addListener(function(m) {
-        main();
+        // main();
     });
 
     function registerMenu() {
@@ -869,6 +887,11 @@ $(window).on('load', function(){
         });
     }
 
+    function isContactSubdomain() {
+        var subdomain = window.location.host.split('.')[0];
+        return contactSubdomain.includes(subdomain);
+    }
+
     function chooseMenu(menu) {
         $('#menu-container li').removeClass('active');
         $("#menu-container li[data-menu='" + menu + "']").addClass('active');
@@ -883,7 +906,9 @@ $(window).on('load', function(){
         var aboutHeight = $('#about').outerHeight(true) + $('#scroll-helper').outerHeight(true);
         var totalHeight = (window.innerWidth < 768) ? $('#fixed-menu').outerHeight(true) + aboutHeight : aboutHeight;
         var marginTop = (window.innerHeight < totalHeight) ? 0 : Math.max(0, (window.innerHeight - totalHeight) / 2);
-        $('#main').css('padding-top', marginTop);
+        if ((window.innerWidth > 768)) {
+            $('#main').css('padding-top', marginTop);
+        }
     }
 
     function addFixedMenuMask() {
@@ -911,8 +936,6 @@ $(window).on('load', function(){
         }
     }
 
-    var controller;
-
     function main() {
         adjustMain();
         addFixedMenuMask();
@@ -921,7 +944,9 @@ $(window).on('load', function(){
             controller = controller.destroy(1);
             controller = undefined;
         }
-        controller = new ScrollMagic.Controller({addIndicators: true});
+        controller = new ScrollMagic.Controller({
+            addIndicators: debug
+        });
         arrangeTimeline();
         arrangeBg();
     }
@@ -1112,22 +1137,24 @@ $(window).on('load', function(){
     function arrangeKelvien() {
         var scene = new ScrollMagic.Scene({
             triggerElement: '#timeline-gap',
-            duration: $('#timeline').height() - $('.event:last').outerHeight(true),
-            reverse: true
+            duration: $('#timeline').height() + ($(".event:last").outerHeight(), $("#kform-wrapper").outerHeight() + $("#kelvien").outerHeight()),
+            reverse: true,
         })
         .setPin('#kelvien')
         .on('start enter', function() {
             addScroll();
-            cC.css({
-                "opacity": 1
-            });
-            $('#scroll-helper').css({
-                "opacity": 0
-            });
-            $('#about').css({
-                "opacity": 0
-            });
-            chooseMenu('story');
+            if (controller.info('scrollDirection') == 'FORWARD') {
+                cC.css({
+                    "opacity": 1
+                });
+                $('#scroll-helper').css({
+                    "opacity": 0
+                });
+                $('#about').css({
+                    "opacity": 0
+                });
+            }
+            chooseMenu('about');
         })
         .on('leave', function() {
             removeScroll();
@@ -1144,9 +1171,9 @@ $(window).on('load', function(){
             $('#about').css({
                 "opacity": 1
             });
-            chooseMenu('about');
         })
         .addTo(controller);
+        scenes.push(scene);
     }
 
     function adjustKelvienX() {
@@ -1155,9 +1182,11 @@ $(window).on('load', function(){
         });
     }
 
+    var contactScene = null;
     function arrangeTimeline() {
+        scenes = [];
         var evenOdd;
-
+        var counter = 0;
         $.each($('.event'), function(i, e) {
             $(e).removeClass('event-right').removeClass('event-left').css({
                 "left": '',
@@ -1166,23 +1195,33 @@ $(window).on('load', function(){
             var mid = $('#timeline').width() / 2;
             /* Bootstrap SM down */
             if (window.innerWidth <= 576) {
-                $(e).addClass('event-right').removeClass('event-left');
-                var offset = $('#timeline').width() - $(e).outerWidth();
-                $(e).css({
-                    "left": -offset
-                });
+                if ($(e).data('event') === 'contact'){ 
+                    $(e).css({
+	                    "left": -52,
+                    });
+                } else {
+                    $(e).addClass('event-right').removeClass('event-left');
+                    var offset = $('#timeline').width() - $(e).outerWidth();
+                    $(e).css({
+	                    "left": -offset,
+                    });
+                }
             } else {
+                var extraSpace = 0;
+                if ($(e).data('event') === 'contact') { 
+                    extraSpace = 160;
+                }
                 if (evenOdd) {
                     $(e).addClass('event-left');
                     var sideOffset = mid - $(e).outerWidth();
                     $(e).css({
-                        "right": -sideOffset
+                        "right": -sideOffset - extraSpace
                     });
                 } else {
                     $(e).addClass('event-right');
                     var sideOffset = mid - $(e).outerWidth();
                     $(e).css({
-                        "left": -sideOffset
+                        "left": -sideOffset - extraSpace
                     });
                 }
                 evenOdd = !evenOdd;
@@ -1193,18 +1232,23 @@ $(window).on('load', function(){
                 triggerElement: element,
                 triggerOffset: midWindow,
                 duration: $(e).outerHeight(true),
-                reverse: true
-            })
-            .on('enter', function () {
+                reverse: true,
+            }).on('enter', function() {
                 $(e).css('opacity', 1);
             })
             .on('leave', function() {
-                if (controller.info('scrollDirection') == 'REVERSE') {
+                if (controller.info('scrollDirection') === 'REVERSE') {
                     $(e).css('opacity', 0);
                 }
             });
 
+            if ($(e).data('event') === 'contact') {
+                contactScene = scene;
+            }
             scene.on('enter', function() {
+                if (i === 1) {
+                    chooseMenu('story');
+                }
                 switch($(e).data('event')) {
                     case 'normal':
                         kelvien.state = 'normal';
@@ -1230,11 +1274,59 @@ $(window).on('load', function(){
                     case 'contact':
                         chooseMenu('contact');
                         removeCompanion(kelvien);
-                        showDialog(kelvien, 'smile');
                         kelvien.state = 'done';
                         changeBg(kelvien, false);
-
-                        story.startAnimateEnding();
+                        $(e).css('opacity', 1);
+                        if (controller.info('scrollDirection') == 'FORWARD' && (!isContactSubdomain() || triggeredOnSubdomain)) {
+                            new Promise((resolve) => {
+                                $("#transition-window").css({
+                                    "opacity": 1,
+                                    "visibility": "visible",
+                                    "transition": "opacity 1s"
+                                });
+                                resolve();
+                            }).then(() => {
+                                return new Promise((resolve) => {
+                                    setTimeout(() => {
+                                        cC.css({
+                                            "opacity": 0,
+                                            "transition": "opacity 0s"
+                                        });
+                                        $(".event").css({
+                                            "opacity": 0,
+                                            "transition": "opacity 0s"
+                                        });
+                                        $("#contact-building").css({
+                                            "visibility": "hidden"
+                                        });
+                                        $("#transition-window").css({
+                                            "opacity": 0,
+                                            "transition": "opacity 1s"
+                                        });
+                                        startChat();
+                                        resolve();
+                                    }, 1000); 
+                                });
+                            }).then(() => {
+                                setTimeout(() => {
+                                    // Show message box
+                                    $("#transition-window").css({
+                                        "visibility": "hidden"
+                                    });
+                                }, 1000);
+                            });
+                        } else {
+                            triggeredOnSubdomain = true;
+                            cC.css({
+                                "opacity": 0,
+                                "transition": "opacity 0s"
+                            });
+                            $(".event").css({
+                                "opacity": 0,
+                                "transition": "opacity 0s"
+                            });
+                            startChat();
+                        }
                         break;
                     default:
                         kelvien.state = 'normal';
@@ -1244,12 +1336,39 @@ $(window).on('load', function(){
             scene.on('leave', function() {
                 switch($(e).data('event')) {
                     case 'contact':
-                        story.stopAnimateEnding();
+                        if (controller.info('scrollDirection') == 'REVERSE') {
+                            chooseMenu('story');
+                            $(e).css('opacity', 0);
+                            cC.css({
+                                "opacity": 1,
+                                "transition": "opacity 0.5s"
+                            });
+                            $("#contact-building").css({
+                                "visibility": "visible"
+                            });
+                            $('.event').css({
+                                "opacity": 1,
+                                "transition": "opacity 0.5s"
+                            });
+                            $('.event.contact').css({
+                                "z-index": 2,
+                                "transition": "opacity 0.2s"
+                            });
+                            $("#kchats").css({
+                                "opacity": 0,
+                                "visibility": "visible"
+                            });
+                            $("#kform-wrapper").css({
+                                "opacity": 0,
+                                "visibility": "hidden"
+                            });
+                        }
                         break;
                 }
                 removeDialog(kelvien);
             });
             scene.addTo(controller);
+            scenes.push(scene);
         });
 
         arrangeKelvien();
@@ -1263,6 +1382,7 @@ $(window).on('load', function(){
         cc.canvas.width = $(window).width();
         cc.canvas.height = h + $('#main').outerHeight(true) + ($(window).height() / 2) - $('.event:last').outerHeight(true);
         $('#canvas-container').height(cc.canvas.height);
+        $('#transition-window').height(cc.canvas.height);
 
         if (story) {
             story.destroy();
@@ -1296,8 +1416,8 @@ $(window).on('load', function(){
 
             lastScrollTop = st;
 
-            clearTimeout($.data(this, 'scrollTimer'));
-            $.data(this, 'scrollTimer', setTimeout(function() {
+            clearTimeout($.data(this, "scrollCheck"));
+            $.data(this, "scrollCheck", setTimeout(function() {
                 kelvien.isMoving = false;
                 changeBg(kelvien);
                 if (kelvien.companion) {
@@ -1310,4 +1430,166 @@ $(window).on('load', function(){
     function removeScroll() {
         $(window).unbind('scroll');
     }
+
+    // focus in n out
+    var focusingOut = false;
+    var focusingInEl = null;
+    var pendingFocusingIn = false;
+    $('#kform .kform-input').focusin(() => {
+        focusingInEl = $(':focus');
+        if (!focusingOut) {
+            scenes.forEach((scene) => {
+                scene.enabled(false);
+            });
+            pendingFocusingIn = false;
+        } else {
+            pendingFocusingIn = true;
+        }
+    });
+    $('#kform .kform-input').focusout(() => {
+        focusingOut = true;
+        $('html,body').animate({
+            scrollTop: $('#main').height()
+        }, 100, function(){
+            scenes.forEach((scene) => {
+                scene.enabled(true);
+            });
+            if (pendingFocusingIn) {
+                focusingInEl.focus();
+            }
+            focusingOut = false;
+        });
+    });
+
+    $("#kform-submit").on("click", () => {
+        sendMessage();
+    });
+
+    let initialChat = false;
+    function prepareChat() {
+        const width = $(".event:first").width();
+        $("#kchats").width(width);
+        $("#kguest").width(width + 35);
+    }
+    prepareChat();
+
+    var formShown = false;
+    function startChat() {
+        $("#kchats").css({
+            "opacity": 1
+        });
+        if (formShown) {
+            $("#kform-wrapper").css({
+                "visibility": "visible",
+                "opacity": 1
+            });
+        }
+        if (!initialChat) {
+            initialChat = true;
+            let pre_messages = [
+                { time: 500, message: "Hi, I'm Kelvien!" },
+                { time: 1500, message: "Feel free to send me a message, if you have any questions or comments" },
+                { time: 1000, message: "You could also send me a quick hello" },
+            ];
+            pre_messages.reduce((acc, el) => {
+                return acc.then(() => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            var chat = $(
+                                "<div class='kchat-wrapper'>" +
+                                    `<div class='kchat'>${el.message}</div>` +
+                                "</div>");
+                            $("#kchats").append(chat);
+                            setTimeout(() => {
+                                chat.css({
+                                    "opacity": 1,
+                                    "max-height": "1000px"
+                                });
+                            }, 100)
+                            resolve();
+                        }, el.time);
+                    });    
+                });
+            }, Promise.resolve()).then(() => {
+                $("#kform-wrapper").css({
+                    "visibility": "visible"
+                });
+                setTimeout(() => {
+                    $("#kform-wrapper").css({
+                        "opacity": 1
+                    });
+                    formShown = true;
+                }, 1000);
+            });
+        }
+    }
 });
+
+let success_messages = [
+    { time: 1000, message: "Thank you for your message!" },
+    { time: 2000, message: "I will get back to you as soon as possible! In the meantime, please scroll up to check out my bio/portfolio" }
+];
+let error_message = [
+    "Oops, looks like there's an error while sending your message",
+    "Please send me an email instead at mas@kelvien.com"
+];
+
+/*
+* Email
+*/
+emailjs.init("user_Ldcm6Qmm3YcI879tKUlYo");
+function sendMessage() {
+    var message = $("#kform .message").val();
+    if (message.trim()) {
+        $("#kform-submit").html("<b>Sending ...</b>");
+        $("#kform-submit").unbind("click");
+        emailjs.send("mailgun", "kelvien_com_contact_form", {
+            from: $(".kform-input.from").val(),
+            message: $(".kform-input.message").val()
+        }).then(function(response) {
+            // Success
+            var maxDisplayedLength = 255;
+            var displayedMessage = message.substring(0, maxDisplayedLength);
+            if (message.length > maxDisplayedLength) {
+                displayedMessage += "...";
+            }
+            $(".input-wrapper").remove();
+            $("#kform-submit").remove();
+            $("#kform").addClass("message");
+            $("#kform").text(displayedMessage);
+            var width = $("#kform").width();
+            var placeholder = $("#kelvien").width() + (5 * 2);
+            $("#kform").css({
+                "width": width - placeholder,
+                "left": placeholder,
+            });
+            var date = new Date();
+            var time = `${date.getHours()}:${date.getMinutes()}`;
+            $("#kform-wrapper").append(`<div id='kguest-message-info'>Sent - ${time}</div>`);
+
+            success_messages.reduce((acc, el) => {
+                return acc.then(() => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            var chat = $(
+                                "<div class='kchat-wrapper'>" +
+                                    `<div class='kchat'>${el.message}</div>` +
+                                "</div>");
+                            $("#kchats").append(chat);
+                            setTimeout(() => {
+                                chat.css({
+                                    "opacity": 1,
+                                    "max-height": "1000px"
+                                });
+                            }, 100)
+                            resolve();
+                        }, el.time);
+                    });    
+                });
+            }, Promise.resolve());
+        }, function(error) {
+            // Error
+            $("#kform-submit").text(`Sorry, I can't process your message now, please message me at mas@kelvien.com while I fix this issue.`);
+        });
+    }
+}

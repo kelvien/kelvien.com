@@ -349,6 +349,10 @@ dl.center dd {
 	transition: opacity 0.5s;
 }
 
+.event.contact {
+	opacity: 1;
+	height: 75px;
+}
 
 .project-tags {
 	padding-top: 10px;
@@ -400,6 +404,14 @@ dl.center dd {
 	border-top-right-radius: 2px;
 	border-bottom-left-radius: 2px;
 	border-bottom-right-radius: 2px;
+}
+
+.event-left.contact #contact-building {
+	margin: 0 0 0 auto;
+}
+
+.event-right.contact {
+	margin: 0 auto 0 0;
 }
 
 .event-title h4 {
@@ -483,6 +495,37 @@ dl.center dd {
 	margin-top: 5px;
 }
 
+#contact-building {
+	position: relative;
+	background: url('../media/sprites.png') -136px -298px;
+	width: 224px;
+    height: 158px;
+	display: block;
+	z-index: 1;
+}
+
+#transition-window {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	background-color: black;
+	opacity: 0;
+	visibility: hidden;
+}
+
+/* #transition-window.animate {
+	animation: transition-window 2s;
+} */
+
+/* @keyframes transition-window {
+	0% { opacity: 0; visibility: hidden; }
+	50% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden }
+} */
+
 #kelvien {
 	position: absolute;
 	left: 50%;
@@ -522,9 +565,149 @@ dl.center dd {
 	transform: scale(0.8);
 	-webkit-transform: scale(0.8);
 	-ms-transform: scale(0.8);
-
 	opacity: 0;
 	transition: opacity 0.5s;
+}
+
+#kchats {
+	position: absolute;
+	bottom: 0px;
+	right: 40px;
+	display: block;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.kchat-wrapper {
+	display: block;
+	margin: 2px;
+	max-height: 0px;
+	height: auto;
+	transition: opacity 0.3s, max-height 2s;
+	opacity: 0;
+	text-align: right;
+}
+
+.kchat {
+	display: inline-block;
+	position: relative;
+	background-color: #DBE4E4;
+	border-radius: 24px 5px 5px 24px;
+	transition: border-radius 0.3s;
+	padding: 8px 10px;
+	text-align: left;
+}
+
+.kchat-wrapper:first-of-type .kchat {
+	border-top-right-radius: 24px;
+}
+
+.kchat-wrapper:last-of-type .kchat {
+	border-bottom-right-radius: 24px;
+}
+
+#kguest {
+	position: absolute;
+	top: 50px;
+}
+
+#kguest .from, #kguest .email, #kguest .message {
+	min-height: 18px;
+	/* border: 2px solid black; */
+}
+
+#kform-wrapper {
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.5s;
+}
+
+#kguest-message-info {
+	float: right;
+    margin-right: 30px;
+}
+
+#kguest-circle {
+	display: inline-block;
+	width: 45px;
+	height: 45px;
+	background-color: #d2e3fc;
+	border-radius: 50%;
+	color: #174ea6;
+}
+
+#kform{
+	border-radius: 0.5rem;
+    border: double 0.75rem #393C44;
+	box-shadow: inset 0 0.125rem 0 #393C44, 0 0.125rem 0 #393C44;
+	padding: 0.75rem;
+	background-color: white;
+	padding: 10px 10px 0px 10px;
+	border-radius: 10px;
+	word-wrap: break-word;
+}
+
+#kform-submit {
+	margin-top: 5px;
+	border: 2.5px solid #393C44;
+	padding: 1.25px 5px;
+	display: inline-block;
+	float: right;
+	border-radius: 0.5rem;
+	font-weight: bolder;
+	cursor:pointer;
+	border: double 0.75rem #393C44;
+	box-shadow: inset 0 0.125rem 0 #393C44, 0 0.125rem 0 #393C44;
+}
+
+input, textarea {
+	border: 0;
+	border-bottom: 1px solid #555;
+	outline: none;
+	resize: none;
+}
+
+.kform-input.from, .kform-input.message {
+	margin-top: -5px;
+	line-height: 1;
+}
+
+#kform .input-wrapper.inline {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	white-space: nowrap;
+}
+
+.input-label {
+	padding-right: 5px;
+}
+
+.kform-input {
+	width: 100%;
+}
+
+/* #kform::after {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: -1;
+}
+
+#kform.message::before {
+	transition: all 1s;
+	left: -48px;
+} */
+
+#kform.message {
+	transition: all 1s;
+	background-color: #d2e3fc;
+	color: #174ea6;
+	border: solid 0px black;
+	box-shadow: none;
+	padding: 10px;
+	left: 0;
+	position: relative;
 }
 
 .contact {
@@ -634,8 +817,24 @@ span.email {
 		padding-left: 80px
 	}
 
-	.event:before {
+	#kchats {
+		left: 40px;
+	}
 
+	.kchat-wrapper {
+		text-align: left;
+	}
+	
+	.kchat {
+		border-radius: 5px 24px 24px 5px;
+	}
+	
+	.kchat-wrapper:first-of-type .kchat {
+		border-top-left-radius: 24px;
+	}
+	
+	.kchat-wrapper:last-of-type .kchat {
+		border-bottom-left-radius: 24px;
 	}
 }
 
