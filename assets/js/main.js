@@ -1486,7 +1486,7 @@ $(window).on('load', function(){
             initialChat = true;
             var pre_messages = [
                 { time: 500, message: "Hey, I'm Kelvien!" },
-                { time: 1500, message: "I am glad that you made it here." },
+                { time: 1500, message: "Thank you for visiting my website" },
                 { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
             ];
             pre_messages.reduce(function(acc, el) {
