@@ -1562,7 +1562,7 @@ function sendMessage() {
                 "left": placeholder,
             });
             var date = new Date();
-            var time = date.getHours() + ":" + date.getMinutes();
+            var time = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0');
             $("#kform-wrapper").append("<div id='kguest-message-info'>Sent - " + time + "</div>");
 
             success_messages.reduce(function(acc, el) {
