@@ -1,6 +1,6 @@
 const debug = false;
-const loadingTime = 0;
-const contactSubdomain = ['hey', 'localhost', '192'];
+const loadingTime = 2000;
+const contactSubdomain = ['hey'];
 
 var isScrolling = false;
 
@@ -1319,6 +1319,7 @@ $(window).on('load', function(){
                             triggeredOnSubdomain = true;
                             cC.css({
                                 "opacity": 0,
+                                "visibility": "hidden",
                                 "transition": "opacity 0s"
                             });
                             $(".event").css({
@@ -1341,6 +1342,7 @@ $(window).on('load', function(){
                             $(e).css('opacity', 0);
                             cC.css({
                                 "opacity": 1,
+                                "visibility": "visible",
                                 "transition": "opacity 0.5s"
                             });
                             $("#contact-building").css({
