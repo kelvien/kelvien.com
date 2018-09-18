@@ -1,6 +1,6 @@
-const debug = false;
-const loadingTime = 2000;
-const contactSubdomain = ['hey'];
+var debug = false;
+var loadingTime = 2000;
+var contactSubdomain = ['hey'];
 
 var isScrolling = false;
 
@@ -831,7 +831,7 @@ $(window).on('load', function(){
     var scenes = [];
     var triggeredOnSubdomain = false;
 
-    new Promise((resolve) => {
+    new Promise(function(resolve) {
         setTimeout(function() {
             $('#canvas-container').css({
                 "visibility": 'visible'
@@ -844,7 +844,7 @@ $(window).on('load', function(){
             });
             resolve();
         }, loadingTime);
-    }).then(() => {
+    }).then(function() {
         main();
         // Move to contact portion on hey subdomain
         if (isContactSubdomain()) {
@@ -1278,16 +1278,16 @@ $(window).on('load', function(){
                         changeBg(kelvien, false);
                         $(e).css('opacity', 1);
                         if (controller.info('scrollDirection') == 'FORWARD' && (!isContactSubdomain() || triggeredOnSubdomain)) {
-                            new Promise((resolve) => {
+                            new Promise(function(resolve) {
                                 $("#transition-window").css({
                                     "opacity": 1,
                                     "visibility": "visible",
                                     "transition": "opacity 1s"
                                 });
                                 resolve();
-                            }).then(() => {
-                                return new Promise((resolve) => {
-                                    setTimeout(() => {
+                            }).then(function() {
+                                return new Promise(function(resolve) {
+                                    setTimeout(function() {
                                         cC.css({
                                             "opacity": 0,
                                             "transition": "opacity 0s"
@@ -1307,8 +1307,8 @@ $(window).on('load', function(){
                                         resolve();
                                     }, 1000); 
                                 });
-                            }).then(() => {
-                                setTimeout(() => {
+                            }).then(function() {
+                                setTimeout(function() {
                                     // Show message box
                                     $("#transition-window").css({
                                         "visibility": "hidden"
@@ -1433,10 +1433,10 @@ $(window).on('load', function(){
     var focusingOut = false;
     var focusingInEl = null;
     var pendingFocusingIn = false;
-    $('#kform .kform-input').focusin(() => {
+    $('#kform .kform-input').focusin(function() {
         focusingInEl = $(':focus');
         if (!focusingOut) {
-            scenes.forEach((scene) => {
+            scenes.forEach(function(scene) {
                 scene.enabled(false);
             });
             pendingFocusingIn = false;
@@ -1444,12 +1444,12 @@ $(window).on('load', function(){
             pendingFocusingIn = true;
         }
     });
-    $('#kform .kform-input').focusout(() => {
+    $('#kform .kform-input').focusout(function() {
         focusingOut = true;
         $('html,body').animate({
             scrollTop: $('#main').height()
         }, 100, function(){
-            scenes.forEach((scene) => {
+            scenes.forEach(function(scene) {
                 scene.enabled(true);
             });
             if (pendingFocusingIn) {
@@ -1459,13 +1459,13 @@ $(window).on('load', function(){
         });
     });
 
-    $("#kform-submit").on("click", () => {
+    $("#kform-submit").on("click", function() {
         sendMessage();
     });
 
-    let initialChat = false;
+    var initialChat = false;
     function prepareChat() {
-        const width = $(".event:first").width();
+        var width = $(".event:first").width();
         $("#kchats").width(width);
         $("#kguest").width(width + 35);
     }
@@ -1484,21 +1484,21 @@ $(window).on('load', function(){
         }
         if (!initialChat) {
             initialChat = true;
-            let pre_messages = [
+            var pre_messages = [
                 { time: 500, message: "Hi, I'm Kelvien!" },
                 { time: 1500, message: "Feel free to send me a message, if you have any questions or comments" },
                 { time: 1000, message: "You could also send me a quick hello" },
             ];
-            pre_messages.reduce((acc, el) => {
-                return acc.then(() => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
+            pre_messages.reduce(function(acc, el) {
+                return acc.then(function() {
+                    return new Promise(function(resolve) {
+                        setTimeout(function() {
                             var chat = $(
                                 "<div class='kchat-wrapper'>" +
-                                    `<div class='kchat'>${el.message}</div>` +
+                                    "<div class='kchat'>" + el.message + "</div>" +
                                 "</div>");
                             $("#kchats").append(chat);
-                            setTimeout(() => {
+                            setTimeout(function() {
                                 chat.css({
                                     "opacity": 1,
                                     "max-height": "1000px"
@@ -1508,11 +1508,11 @@ $(window).on('load', function(){
                         }, el.time);
                     });    
                 });
-            }, Promise.resolve()).then(() => {
+            }, Promise.resolve()).then(function() {
                 $("#kform-wrapper").css({
                     "visibility": "visible"
                 });
-                setTimeout(() => {
+                setTimeout(function() {
                     $("#kform-wrapper").css({
                         "opacity": 1
                     });
@@ -1523,11 +1523,11 @@ $(window).on('load', function(){
     }
 });
 
-let success_messages = [
+var success_messages = [
     { time: 1000, message: "Thank you for your message!" },
     { time: 2000, message: "I will get back to you as soon as possible! In the meantime, please scroll up to check out my bio/portfolio" }
 ];
-let error_message = [
+var error_message = [
     "Oops, looks like there's an error while sending your message",
     "Please send me an email instead at mas@kelvien.com"
 ];
@@ -1562,19 +1562,19 @@ function sendMessage() {
                 "left": placeholder,
             });
             var date = new Date();
-            var time = `${date.getHours()}:${date.getMinutes()}`;
-            $("#kform-wrapper").append(`<div id='kguest-message-info'>Sent - ${time}</div>`);
+            var time = date.getHours() + ":" + date.getMinutes();
+            $("#kform-wrapper").append("<div id='kguest-message-info'>Sent - " + time + "</div>");
 
-            success_messages.reduce((acc, el) => {
-                return acc.then(() => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
+            success_messages.reduce(function(acc, el) {
+                return acc.then(function() {
+                    return new Promise(function(resolve) {
+                        setTimeout(function() {
                             var chat = $(
                                 "<div class='kchat-wrapper'>" +
-                                    `<div class='kchat'>${el.message}</div>` +
+                                    "<div class='kchat'>" + el.message + "</div>" +
                                 "</div>");
                             $("#kchats").append(chat);
-                            setTimeout(() => {
+                            setTimeout(function() {
                                 chat.css({
                                     "opacity": 1,
                                     "max-height": "1000px"
@@ -1587,7 +1587,7 @@ function sendMessage() {
             }, Promise.resolve());
         }, function(error) {
             // Error
-            $("#kform-submit").text(`Sorry, I can't process your message now, please message me at mas@kelvien.com while I fix this issue.`);
+            $("#kform-submit").text("Sorry, I can't process your message now, please message me at mas@kelvien.com while I fix this issue.");
         });
     }
 }
