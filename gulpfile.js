@@ -31,7 +31,7 @@ gulp.task('css', function() {
 
 gulp.task('js', function() {
 	gulp.src(src + '/assets/js/**/*.js')
-	    .pipe(util.env.production ? uglify({output: {ascii_only:true}}) : util.noop())
+		.pipe(util.env.production ? uglify({output: {ascii_only:true}}) : util.noop())
 		.pipe(gulp.dest(dst + '/assets/js'));
 });
 
