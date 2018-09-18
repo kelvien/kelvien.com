@@ -617,8 +617,8 @@ dl.center dd {
 }
 
 #kform-wrapper {
-	/* opacity: 0;
-	visibility: hidden; */
+	opacity: 0;
+	visibility: hidden;
 	transition: all 0.5s;
 }
 
