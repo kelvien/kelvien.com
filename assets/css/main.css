@@ -623,8 +623,7 @@ dl.center dd {
 }
 
 #kguest-message-info {
-	float: right;
-    margin-right: 30px;
+    margin-left: 50px;
 }
 
 #kguest-circle {
@@ -645,6 +644,7 @@ dl.center dd {
 	padding: 10px 10px 0px 10px;
 	border-radius: 10px;
 	word-wrap: break-word;
+	word-break: break-all;
 }
 
 #kform-submit {
