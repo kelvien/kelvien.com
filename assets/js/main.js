@@ -1354,13 +1354,9 @@ $(window).on('load', function(){
                                 "z-index": 2,
                                 "transition": "opacity 0.2s"
                             });
-                            $("#kchats").css({
+                            $("#kchats, #kguest").css({
                                 "opacity": 0,
                                 "visibility": "visible"
-                            });
-                            $("#kform-wrapper").css({
-                                "opacity": 0,
-                                "visibility": "hidden"
                             });
                         }
                         break;
@@ -1479,7 +1475,7 @@ $(window).on('load', function(){
             "opacity": 1
         });
         if (formShown) {
-            $("#kform-wrapper").css({
+            $("#kguest").css({
                 "visibility": "visible",
                 "opacity": 1
             });

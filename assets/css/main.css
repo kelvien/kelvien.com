@@ -648,6 +648,7 @@ dl.center dd {
 }
 
 #kform-submit {
+	background-color: white;
 	margin-top: 5px;
 	border: 2.5px solid #393C44;
 	padding: 1.25px 5px;
