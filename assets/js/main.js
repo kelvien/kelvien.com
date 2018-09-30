@@ -851,7 +851,7 @@ $(window).on('load', function(){
             $('html,body').scrollTop($('#canvas-container').height());
         }
     });
-    
+
     // Orientation object
     var mql = window.matchMedia("(orientation: portrait)");
 
@@ -1195,7 +1195,7 @@ $(window).on('load', function(){
             var mid = $('#timeline').width() / 2;
             /* Bootstrap SM down */
             if (window.innerWidth <= 576) {
-                if ($(e).data('event') === 'contact'){ 
+                if ($(e).data('event') === 'contact'){
                     $(e).css({
 	                    "left": -52,
                     });
@@ -1208,7 +1208,7 @@ $(window).on('load', function(){
                 }
             } else {
                 var extraSpace = 0;
-                if ($(e).data('event') === 'contact') { 
+                if ($(e).data('event') === 'contact') {
                     extraSpace = 160;
                 }
                 if (evenOdd) {
@@ -1246,7 +1246,7 @@ $(window).on('load', function(){
                 contactScene = scene;
             }
             scene.on('enter', function() {
-                if (i === 1) {
+                if (i === 0) {
                     chooseMenu('story');
                 }
                 switch($(e).data('event')) {
@@ -1305,7 +1305,7 @@ $(window).on('load', function(){
                                         });
                                         startChat();
                                         resolve();
-                                    }, 1000); 
+                                    }, 1000);
                                 });
                             }).then(function() {
                                 setTimeout(function() {
@@ -1506,7 +1506,7 @@ $(window).on('load', function(){
                             }, 100)
                             resolve();
                         }, el.time);
-                    });    
+                    });
                 });
             }, Promise.resolve()).then(function() {
                 $("#kform-wrapper").css({
@@ -1582,7 +1582,7 @@ function sendMessage() {
                             }, 100)
                             resolve();
                         }, el.time);
-                    });    
+                    });
                 });
             }, Promise.resolve());
         }, function(error) {
