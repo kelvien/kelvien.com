@@ -1277,6 +1277,9 @@ $(window).on('load', function(){
                         kelvien.state = 'done';
                         changeBg(kelvien, false);
                         $(e).css('opacity', 1);
+                        $("#kchats, #kguest").css({
+                            "display": "block"
+                        });
                         if (controller.info('scrollDirection') == 'FORWARD' && (!isContactSubdomain() || triggeredOnSubdomain)) {
                             new Promise(function(resolve) {
                                 $("#transition-window").css({
@@ -1358,7 +1361,8 @@ $(window).on('load', function(){
                             });
                             $("#kchats, #kguest").css({
                                 "opacity": 0,
-                                "visibility": "visible"
+                                "visibility": "visible",
+                                "display": "none"
                             });
                         }
                         break;
