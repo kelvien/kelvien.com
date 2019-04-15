@@ -1267,11 +1267,11 @@ $(window).on('load', function(){
                     case 'sweat':
                         removeCompanion(kelvien);
                         break;
-                    case 'vscode-hue': 
-                        showCompanion(kelvien);
-                        break;
                     case 'projectKelvien':
+                        break;
+                    case 'vscode-hue': 
                         kelvien.state = 'normal';
+                        showCompanion(kelvien);
                         break;
                     case 'contact':
                         chooseMenu('contact');
