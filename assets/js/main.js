@@ -1272,11 +1272,11 @@ $(window).on('load', function(){
                         removeCompanion(kelvien);
                         break;
                     case 'projectKelvien':
+                        story.startAnimateEnding();
                         break;
-                    case 'vscode-hue': 
+                    case 'vscode-hue':
                         kelvien.state = 'normal';
                         showCompanion(kelvien);
-                        story.startAnimateEnding();
                         break;
                     case 'contact':
                         chooseMenu('contact');
