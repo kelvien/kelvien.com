@@ -825,15 +825,15 @@ span.email {
 	.kchat-wrapper {
 		text-align: left;
 	}
-	
+
 	.kchat {
 		border-radius: 5px 24px 24px 5px;
 	}
-	
+
 	.kchat-wrapper:first-of-type .kchat {
 		border-top-left-radius: 24px;
 	}
-	
+
 	.kchat-wrapper:last-of-type .kchat {
 		border-bottom-left-radius: 24px;
 	}

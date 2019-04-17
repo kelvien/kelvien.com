@@ -365,6 +365,8 @@ Story.prototype.getPointers = function() {
     this.position['oceanH'] = $(".event[data-event='fly']:first").outerHeight(true) + $(".event[data-event='fly']:last").outerHeight(true);
     this.position['ending'] = $(".event:last").offset().top;
     this.position['endingH'] = $(".event:last").outerHeight(true);
+
+    this.position['projectKelvien'] = $(".event[data-event='projectKelvien']:first").offset().top;
 }
 
 Story.prototype.insertCharacter = function(character, i, j, boundary, movingNPC) {
@@ -404,13 +406,14 @@ Story.prototype.setupAnimateDOM = function() {
     var latias = $('<div>');
     var latiasLastI = -62;
     latias.attr('id', 'latias');
+    latias.attr('class', 'flyer');
     latias.css({
         "position": 'absolute',
         "background": 'url(assets/media/sprites.png)',
         "background-position": '-455px -448px',
         "width": 56,
         "height": 52,
-        "top": this.position['ending'] + 64,
+        "top": this.position['projectKelvien'] + 64,
         "right": latiasLastI
     });
     container.append(latias);
@@ -418,14 +421,15 @@ Story.prototype.setupAnimateDOM = function() {
 
     var latios = $('<div>');
     var latiosLastI = -112;
-    latios.attr('id', 'latias');
+    latios.attr('id', 'latios');
+    latios.attr('class', 'flyer');
     latios.css({
         "position": 'absolute',
         "background": 'url(assets/media/sprites.png)',
         "background-position": '-520px -448px',
         "width": 56,
         "height": 52,
-        "top": this.position['ending'] + 96,
+        "top": this.position['projectKelvien'] + 96,
         "right": latiosLastI
     });
     container.append(latios);
@@ -1272,6 +1276,7 @@ $(window).on('load', function(){
                     case 'vscode-hue': 
                         kelvien.state = 'normal';
                         showCompanion(kelvien);
+                        story.startAnimateEnding();
                         break;
                     case 'contact':
                         chooseMenu('contact');
@@ -1341,6 +1346,9 @@ $(window).on('load', function(){
             })
             scene.on('leave', function() {
                 switch($(e).data('event')) {
+                    case 'projectKelvien':
+                        story.stopAnimateEnding();
+                        break;
                     case 'contact':
                         if (controller.info('scrollDirection') == 'REVERSE') {
                             chooseMenu('story');
