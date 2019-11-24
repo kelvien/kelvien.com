@@ -766,6 +766,10 @@ input, textarea {
 	100%  { background-position: -128px -424px; }
 }
 
+@keyframes sad {
+	100%  { background-position: -128px -390px; }
+}
+
 /**/
 
 html, body {
