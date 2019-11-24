@@ -886,14 +886,18 @@ $(window).on('load', function(){
                 case 'contact':
                     to = $('body').height();
                     break;
+                case 'returns':
+                    break;
                 default:
                     to = 0;
                     break;
             }
 
-            $('html, body').animate({
-                scrollTop: to
-            }, duration);
+            if ($(this).data('menu') !== 'returns') {
+                $('html, body').animate({
+                    scrollTop: to
+                }, duration);
+            }
         });
     }
 
