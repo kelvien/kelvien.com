@@ -1,6 +1,7 @@
 var debug = false;
 var loadingTime = 2000;
 var contactSubdomain = ['hey'];
+var returnsSubdomain = 'returns';
 
 var isScrolling = false;
 
@@ -809,6 +810,12 @@ Story.prototype.registerTile = function(tile, i, j) {
     return tempTile;
 }
 
+
+function isReturnsSubdomain() {
+    var subdomain = window.location.host.split('.')[0];
+    return returnsSubdomain === subdomain;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $('#preload').show();
@@ -850,9 +857,8 @@ $(window).on('load', function(){
         }, loadingTime);
     }).then(function() {
         main();
-        // Move to contact portion on hey subdomain
-        if (isContactSubdomain()) {
-            $('html,body').scrollTop($('#canvas-container').height());
+        if (isValidSubdomain()) {
+            $('html, body').scrollTop($('#canvas-container').height());
         }
     });
 
@@ -891,9 +897,43 @@ $(window).on('load', function(){
         });
     }
 
+    function isValidSubdomain() {
+        var subdomain = window.location.host.split('.')[0];
+        return contactSubdomain.concat(returnsSubdomain).indexOf(subdomain) >= 0;
+    }
+
     function isContactSubdomain() {
         var subdomain = window.location.host.split('.')[0];
         return contactSubdomain.indexOf(subdomain) >= 0;
+    }
+
+    const currentMenu = $("#menu-container ul li");
+    const returnsMenu =  $("<li data-menu='returns' class='active'>Returns</li>");
+
+    function getInlineInput(text, inputName) {
+        return $(`<div class='input-wrapper inline'><div class='input-label inline-input'><b>${text}</b></div><input class='kform-input ${inputName} inline-input' tabindex='1'/></div></div>`);
+    }
+
+    function getTextareaInput(text, inputName) {
+        return $(`<div class="input-wrapper">
+        <div class="input-label"><b>${text}</b></div>
+        <textarea class="kform-input ${inputName}" tabindex="2"></textarea>
+    </div>`);
+    }
+
+    function setupReturnsSubdomain() {
+        $("#menu-container ul").empty();
+        $("#menu-container ul").append(returnsMenu);
+        $("body").css("overflow", "hidden");
+        $("#kform").empty();
+        $("#kform").append(getInlineInput('Your name', 'name'));
+        $("#kform").append(getInlineInput("Your email", 'email'));
+        $("#kform").append(getTextareaInput('What did I lose?', 'lost_item'));
+        showDialog(kelvien, 'sad');
+    }
+
+    if (isReturnsSubdomain()) {
+        setupReturnsSubdomain();
     }
 
     function chooseMenu(menu) {
@@ -1122,6 +1162,10 @@ $(window).on('load', function(){
                 bg = '-64px -424px';
                 anim = 'smile';
                 break;
+            case 'sad':
+                bg = '-64px -390px';
+                anim = 'sad';
+                break;
         }
         anim += ' 1s steps(2) infinite';
         dialogBox.css({
@@ -1279,7 +1323,11 @@ $(window).on('load', function(){
                         showCompanion(kelvien);
                         break;
                     case 'contact':
-                        chooseMenu('contact');
+                        if (isReturnsSubdomain()) {
+                            chooseMenu('returns');
+                        } else {
+                            chooseMenu('contact');
+                        }
                         removeCompanion(kelvien);
                         kelvien.state = 'done';
                         changeBg(kelvien, false);
@@ -1287,9 +1335,9 @@ $(window).on('load', function(){
                         $("#kchats, #kguest").css({
                             "display": "block"
                         });
-                        if (controller.info('scrollDirection') == 'FORWARD' && (!isContactSubdomain() || triggeredOnSubdomain)) {
+                        if (controller.info('scrollDirection') == 'FORWARD' && (!isValidSubdomain() || triggeredOnSubdomain)) {
                             new Promise(function(resolve) {
-                                $("#transition-window").css({
+                              $("#transition-window").css({
                                     "opacity": 1,
                                     "visibility": "visible",
                                     "transition": "opacity 1s"
@@ -1377,7 +1425,9 @@ $(window).on('load', function(){
                         }
                         break;
                 }
-                removeDialog(kelvien);
+                if (!isReturnsSubdomain()) {
+                    removeDialog(kelvien);
+                }
             });
             scene.addTo(controller);
             scenes.push(scene);
@@ -1498,11 +1548,20 @@ $(window).on('load', function(){
         }
         if (!initialChat) {
             initialChat = true;
-            var pre_messages = [
-                { time: 500, message: "Hey, I'm Kelvien!" },
-                { time: 1500, message: "Thank you for visiting my website" },
-                { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
-            ];
+            var pre_messages = [];
+            if (isReturnsSubdomain()) {
+                pre_messages = [
+                    { time: 500, message: "Oh no, I lost it again, didn't I" },
+                    { time: 1500, message: "Thank you for reaching out for my lost item" },
+                    { time: 1500, message: "Please leave your name and email so that I can personally thank you and plan to get reacquainted to my lost item." }
+                ];
+            } else {
+                pre_messages = [
+                    { time: 500, message: "Hey, I'm Kelvien!" },
+                    { time: 1500, message: "Thank you for visiting my website" },
+                    { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
+                ];
+            }
             pre_messages.reduce(function(acc, el) {
                 return acc.then(function() {
                     return new Promise(function(resolve) {
@@ -1535,73 +1594,99 @@ $(window).on('load', function(){
             });
         }
     }
-});
 
-var success_messages = [
-    { time: 1500, message: "Thank you for your message!" },
-    { time: 2000, message: "I will get back to you as soon as possible! In the meantime, please scroll up to check out my bio/portfolio" }
-];
-var error_message = [
-    "Oops, looks like there's an error while sending your message",
-    "Please send me an email instead at mas@kelvien.com"
-];
-
-/*
-* Email
-*/
-emailjs.init("user_Ldcm6Qmm3YcI879tKUlYo");
-function sendMessage() {
-    var message = $("#kform .message").val();
-    if (message.trim()) {
-        $("#kform-submit").html("<b>Sending ...</b>");
-        $("#kform-submit").unbind("click");
-        emailjs.send("mailgun", "kelvien_com_contact_form", {
-            from: $(".kform-input.from").val(),
-            message: $(".kform-input.message").val()
-        }).then(function(response) {
-            // Success
-            var maxDisplayedLength = 255;
-            var displayedMessage = message.substring(0, maxDisplayedLength);
-            if (message.length > maxDisplayedLength) {
-                displayedMessage += "...";
+    var success_messages = isReturnsSubdomain() ? [
+        { time: 1500, message: "Thank you again for reaching out for my lost item!" },
+        { time: 2000, message: "I will get back to you as soon as possible to arrange something!" }
+    ] : [
+        { time: 1500, message: "Thank you for your message!" },
+        { time: 2000, message: "I will get back to you as soon as possible! In the meantime, please scroll up to check out my bio/portfolio" }
+    ];
+    var error_message = [
+        "Oops, looks like there's an error while sending your message",
+        "Please send me an email instead at mas@kelvien.com"
+    ];
+    
+    /*
+    * Email
+    */
+    emailjs.init("user_Ldcm6Qmm3YcI879tKUlYo");
+    function sendMessage() {
+        // You don't have to fill out what I missed, for now
+        var isValid = isReturnsSubdomain() ? $("#kform .email").val().length > 0 : $("#kform .message").val().trim().length > 0;
+        if (isValid) {
+            $("#kform-submit").html("<b>Sending ...</b>");
+            $("#kform-submit").unbind("click");
+            const emailJSFormID = isReturnsSubdomain() ? 'returns_form' : 'contact_form';
+            var body = {};
+            if (isReturnsSubdomain()) {
+                body = {
+                    email: $(".kform-input.email").val(),
+                    name: $(".kform-input.name").val(),
+                    lost_item: $(".kform-input.lost_item").val()
+                }
+            } else {
+                body = {
+                    email: $(".kform-input.email").val(),
+                    message: $(".kform-input.message").val()
+                };
             }
-            $(".input-wrapper").remove();
-            $("#kform-submit").remove();
-            $("#kform").addClass("message");
-            $("#kform").text(displayedMessage);
-            var width = $("#kform").width();
-            var placeholder = $("#kelvien").width() + (5 * 2);
-            $("#kform").css({
-                "display": "inline-block",
-                "left": placeholder,
-            });
-            var date = new Date();
-            var time = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0');
-            $("#kform-wrapper").append("<div id='kguest-message-info'>Sent - " + time + "</div>");
-
-            success_messages.reduce(function(acc, el) {
-                return acc.then(function() {
-                    return new Promise(function(resolve) {
-                        setTimeout(function() {
-                            var chat = $(
-                                "<div class='kchat-wrapper'>" +
-                                    "<div class='kchat'>" + el.message + "</div>" +
-                                "</div>");
-                            $("#kchats").append(chat);
-                            setTimeout(function() {
-                                chat.css({
-                                    "opacity": 1,
-                                    "max-height": "1000px"
-                                });
-                            }, 100)
-                            resolve();
-                        }, el.time);
-                    });
+            emailjs.send("mailgun", emailJSFormID, body).then(function(response) {
+                // Success
+                var maxDisplayedLength = 255;
+                var displayedMessage = '';
+                if (isReturnsSubdomain()) {
+                    displayedMessage = "Found your lost item";
+                } else {
+                    const message = $(".kform-input.message").val();
+                    displayedMessage = message.trim();
+                    message.substring(0, maxDisplayedLength);
+                    if (message.length > maxDisplayedLength) {
+                        displayedMessage += "...";
+                    }
+                }
+                $(".input-wrapper").remove();
+                $("#kform-submit").remove();
+                $("#kform").addClass("message");
+                $("#kform").text(displayedMessage);
+                var width = $("#kform").width();
+                var placeholder = $("#kelvien").width() + (5 * 2);
+                $("#kform").css({
+                    "display": "inline-block",
+                    "left": placeholder,
                 });
-            }, Promise.resolve());
-        }, function(error) {
-            // Error
-            $("#kform-submit").text("Sorry, I can't process your message now, please message me at mas@kelvien.com while I fix this issue.");
-        });
+                var date = new Date();
+                var time = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0');
+                $("#kform-wrapper").append("<div id='kguest-message-info'>Sent - " + time + "</div>");
+    
+                if (isReturnsSubdomain()) {
+                    showDialog(kelvien, 'smile');
+                }
+    
+                success_messages.reduce(function(acc, el) {
+                    return acc.then(function() {
+                        return new Promise(function(resolve) {
+                            setTimeout(function() {
+                                var chat = $(
+                                    "<div class='kchat-wrapper'>" +
+                                        "<div class='kchat'>" + el.message + "</div>" +
+                                    "</div>");
+                                $("#kchats").append(chat);
+                                setTimeout(function() {
+                                    chat.css({
+                                        "opacity": 1,
+                                        "max-height": "1000px"
+                                    });
+                                }, 100)
+                                resolve();
+                            }, el.time);
+                        });
+                    });
+                }, Promise.resolve());
+            }, function(error) {
+                // Error
+                $("#kform-submit").text("Sorry, I can't process your message now, please message me at mas@kelvien.com while I fix this issue.");
+            });
+        }
     }
-}
+});
