@@ -6,7 +6,7 @@ var util = require('gulp-util');
 var gulp = require('gulp'),
 minifyHTML = require('gulp-html-minifier'),
 cleanCSS = require('gulp-clean-css'),
-uglify = require('gulp-uglify-es');
+uglify = require('gulp-uglify-es').default;
 
 gulp.task('copy', function() {
 	gulp.src(src + '/assets/media/**')
