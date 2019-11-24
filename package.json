@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "build": "gulp",
+    "build:production": "gulp --production"
+  },
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-clean-css": "3.7.0",

@@ -12,10 +12,8 @@ Minification:
   stage: build
   before_script:
   - npm install
-  - npm install gulp --global
-  - npm install gulp --save-dev
+  - npm run build:production
   script:
-  - gulp --production
   - mv dist .public
   artifacts:
     paths:
