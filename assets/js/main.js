@@ -1561,8 +1561,7 @@ $(window).on('load', function(){
                 ];
             } else {
                 pre_messages = [
-                    { time: 500, message: "Hey, I'm Kelvien!" },
-                    { time: 1500, message: "Thank you for visiting my website" },
+                    { time: 500, message: "Hey!" },
                     { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
                 ];
             }
