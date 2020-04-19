@@ -1,6 +1,6 @@
 var debug = false;
 var loadingTime = 2000;
-var contactSubdomain = ['hey'];
+var contactSubdomain = ['ask', 'hey'];
 var returnsSubdomain = 'returns';
 
 var isScrolling = false;
