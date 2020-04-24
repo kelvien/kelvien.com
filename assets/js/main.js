@@ -1620,7 +1620,7 @@ $(window).on('load', function(){
         if (isValid) {
             $("#kform-submit").html("<b>Sending ...</b>");
             $("#kform-submit").unbind("click");
-            const emailJSFormID = isReturnsSubdomain() ? 'returns_form' : 'contact_form';
+            const emailJSFormID = 'contact_form';
             var body = {};
             if (isReturnsSubdomain()) {
                 body = {
