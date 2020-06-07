@@ -1,5 +1,5 @@
 var debug = false;
-var loadingTime = 500;
+var loadingTime = 2000;
 var contactSubdomain = ['ask', 'hey'];
 var returnsSubdomain = 'returns';
 
