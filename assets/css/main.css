@@ -608,7 +608,7 @@ dl.center dd {
 
 #kguest {
 	position: absolute;
-	/* display: none; */
+	display: none;
 	top: 50px;
 }
 
