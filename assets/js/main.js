@@ -336,6 +336,9 @@ Story.prototype.loadImage = function() {
             alias.character['tiff'] = new Character(img, 'tiff', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 412}}});
             alias.character['nic'] = new Character(img, 'nic', 32, 40, 'down', {"down": {"normal": {"x": 578, "y": 456}}});
 
+            alias.character['brando'] = new Character(img, 'brando', 32, 32, 'down', { "down": { "normal": { "x": 620, "y": 328 } } });
+            alias.character['bona'] = new Character(img, 'bona', 32, 32, 'down', { "down": { "normal": { "x": 652, "y": 328 } } });
+
             alias.draw();
 
             alias.setupAnimateDOM();
@@ -775,12 +778,15 @@ Story.prototype.draw = function() {
     var mom = this.character['mom'];
     var tiff = this.character['tiff'];
     var nic = this.character['nic'];
+    var brando = this.character['brando'];
+    var bona = this.character['bona'];
     var afterHomeJ = getIOrJ(this.position['kelvienT']);
     this.cc.drawImage(dad.img, 0, 0, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
     this.cc.drawImage(mom.img, 0, 0, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
     this.cc.drawImage(tiff.img, 0, 0, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
     this.cc.drawImage(nic.img, 0, 0, nic.w, nic.h, (homeI + 4) * 32, (afterHomeJ * 32) - 8, nic.w, nic.h);
-
+    this.cc.drawImage(brando.img, 0, 0, brando.w, brando.h, (homeI + 3) * 32, ((afterHomeJ + 1) * 32) - 8, brando.w, brando.h);
+    this.cc.drawImage(bona.img, 0, 0, bona.w, bona.h, (homeI + 4) * 32, ((afterHomeJ + 1) * 32) - 8, bona.w, bona.h);
 }
 
 function getIOrJ(t) {
