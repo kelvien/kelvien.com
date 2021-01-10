@@ -91,6 +91,7 @@ Tile.prototype.processTile = function(el) {
     offscreenCanvas.height = 32;
 
     var img;
+    /* Disable offscreen canvas due to performance issue
     if (el.deg != 0) {
         offscreenCtx.translate(32 / 2, 32 / 2);
         offscreenCtx.rotate(this.deg * Math.PI/180);
@@ -104,6 +105,7 @@ Tile.prototype.processTile = function(el) {
         offscreenCtx.scale(-1, 1);
         offscreenCtx.drawImage(offscreenCanvas, 0, 0);
     }
+    */
     return offscreenCanvas;
 }
 
@@ -130,7 +132,9 @@ Item.prototype.processItem = function() {
     offscreenCanvas.width = this.w;
     offscreenCanvas.height = this.h;
 
+    /* Disable offscreen canvas due to performance issue
     offscreenCtx.drawImage(this.src, this.x, this.y, this.w, this.h, 0, 0, this.w, this.h);
+    */
     return offscreenCanvas;
 }
 
@@ -240,10 +244,10 @@ Story.prototype.loadImage = function() {
             alias.tile['flower'] = new Tile(img, 'flower', 204, 192, 0);
             alias.tile['grassMildMM'] = new Tile(img, 'grassMildMM', 204, 260, 0);
             alias.tile['grassMildML'] = new Tile(img, 'grassMildML', 238, 260, 0);
-            alias.tile['grassMildMR'] = new Tile(img, 'grassMildMR', 238, 260, 0, 1);
+            alias.tile['grassMildMR'] = new Tile(img, 'grassMildMR', 272, 260, 0);
             alias.tile['grassMildTL'] = new Tile(img, 'grassMildTL', 238, 226, 0);
             alias.tile['grassMildTM'] = new Tile(img, 'grassMildTM', 238, 192, 0);
-            alias.tile['grassMildTR'] = new Tile(img, 'grassMildTR', 238, 226, 0, 1);
+            alias.tile['grassMildTR'] = new Tile(img, 'grassMildTR', 306, 226, 0);
             alias.tile['grassMildBL'] = new Tile(img, 'grassMildBL', 272, 226, 0, 1);
             alias.tile['grassMildBM'] = new Tile(img, 'grassMildBM', 238, 192, 180);
             alias.tile['grassMildBR'] = new Tile(img, 'grassMildBR', 272, 226, 0);
@@ -740,7 +744,7 @@ Story.prototype.draw = function() {
 
             // Image, image Pos X, image Pos Y, image Width, image Height, Canvas x, Canvas Y, draw Width, draw Height
             // draw width and height are higher than the actual because Safari does not process floating point position (i,j)
-            this.cc.drawImage(tile.img, 0, 0, 32, 32, adjustedI, adjustedJ, 33, 33);
+            this.cc.drawImage(tile.src, tile.x, tile.y, 32, 32, adjustedI, adjustedJ, 33, 33);
         }
     }
     // Items
@@ -760,7 +764,7 @@ Story.prototype.draw = function() {
         for (var i = 0; i < (this.cc.canvas.width / 32) + 1; i++) {
             if (((this.position['windowW'] > 768 && baseI < treeC) || (this.position['windowW'] > 992 && baseI + treeC > windowR) || baseJ < treeC || baseJ + treeC > windowB) && (baseJ < oceanT || baseJ > oceanB)) {
                 var diff = (i % 2 == 0) ? 32 : 0;
-                this.cc.drawImage(tree.img, 0, 0, tree.w, tree.h, (i * 64) - this.position['adjustMostLeft'], (j * 64) - diff, tree.w, tree.h);
+                this.cc.drawImage(tree.src, tree.x, tree.y, tree.w, tree.h, (i * 64) - this.position['adjustMostLeft'], (j * 64) - diff, tree.w, tree.h);
             }
             baseI += 2;
         }
@@ -771,7 +775,7 @@ Story.prototype.draw = function() {
     var home = this.item['home'];
     var homeI = getIOrJ(this.position['kelvien'] + 64);
     var homeJ = getIOrJ(this.position['kelvienT'] - home.h);
-    this.cc.drawImage(home.img, 0, 0, home.w, home.h, homeI * 32, homeJ * 32, home.w, home.h);
+    this.cc.drawImage(home.src, home.x, home.y, home.w, home.h, homeI * 32, homeJ * 32, home.w, home.h);
 
     // Family
     var dad = this.character['dad'];
@@ -781,12 +785,13 @@ Story.prototype.draw = function() {
     var brando = this.character['brando'];
     var bona = this.character['bona'];
     var afterHomeJ = getIOrJ(this.position['kelvienT']);
-    this.cc.drawImage(dad.img, 0, 0, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
-    this.cc.drawImage(mom.img, 0, 0, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
-    this.cc.drawImage(tiff.img, 0, 0, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
-    this.cc.drawImage(nic.img, 0, 0, nic.w, nic.h, (homeI + 4) * 32, (afterHomeJ * 32) - 8, nic.w, nic.h);
-    this.cc.drawImage(brando.img, 0, 0, brando.w, brando.h, (homeI + 3) * 32, ((afterHomeJ + 1) * 32) - 8, brando.w, brando.h);
-    this.cc.drawImage(bona.img, 0, 0, bona.w, bona.h, (homeI + 4) * 32, ((afterHomeJ + 1) * 32) - 8, bona.w, bona.h);
+    console.log(dad.src, dad.x, dad.y, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h)
+    this.cc.drawImage(dad.src, dad.x, dad.y, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
+    this.cc.drawImage(mom.src, mom.x, mom.y, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
+    this.cc.drawImage(tiff.src, tiff.x, tiff.y, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
+    this.cc.drawImage(nic.src, nic.x, nic.y, nic.w, nic.h, (homeI + 4) * 32, (afterHomeJ * 32) - 8, nic.w, nic.h);
+    this.cc.drawImage(brando.src, brando.x, brando.y, brando.w, brando.h, (homeI + 3) * 32, ((afterHomeJ + 1) * 32) - 8, brando.w, brando.h);
+    this.cc.drawImage(bona.src, bona.x, bona.y, bona.w, bona.h, (homeI + 4) * 32, ((afterHomeJ + 1) * 32) - 8, bona.w, bona.h);
 }
 
 function getIOrJ(t) {
