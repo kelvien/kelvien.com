@@ -1351,6 +1351,7 @@ $(window).on('load', function(){
                             "display": "block"
                         });
                         if (controller.info('scrollDirection') == 'FORWARD' && (!isValidSubdomain() || triggeredOnSubdomain)) {
+                            $('html').css('overflow', 'hidden')
                             new Promise(function(resolve) {
                               $("#transition-window").css({
                                     "opacity": 1,
@@ -1386,6 +1387,7 @@ $(window).on('load', function(){
                                     $("#transition-window").css({
                                         "visibility": "hidden"
                                     });
+                                    $('html').css('overflow', '')
                                 }, 1000);
                             });
                         } else {
@@ -1573,7 +1575,7 @@ $(window).on('load', function(){
             } else {
                 pre_messages = [
                     { time: 500, message: "Hey!" },
-                    { time: 1500, message: "Please feel free to send me any messages/questions using the form below" }
+                    { time: 1000, message: "Please feel free to send me any messages/questions using the form below" }
                 ];
             }
             pre_messages.reduce(function(acc, el) {
