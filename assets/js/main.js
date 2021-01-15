@@ -785,7 +785,6 @@ Story.prototype.draw = function() {
     var brando = this.character['brando'];
     var bona = this.character['bona'];
     var afterHomeJ = getIOrJ(this.position['kelvienT']);
-    console.log(dad.src, dad.x, dad.y, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h)
     this.cc.drawImage(dad.src, dad.x, dad.y, dad.w, dad.h, (homeI + 1) * 32, (afterHomeJ * 32) - 8, dad.w, dad.h);
     this.cc.drawImage(mom.src, mom.x, mom.y, mom.w, mom.h, (homeI + 2) * 32, (afterHomeJ * 32) - 8, mom.w, mom.h);
     this.cc.drawImage(tiff.src, tiff.x, tiff.y, tiff.w, tiff.h, (homeI + 3) * 32, (afterHomeJ * 32) - 8, tiff.w, tiff.h);
