@@ -170,7 +170,7 @@ html.not-supported #footer {
 	border-radius: 50%;
 	background-image: url('../media/profile-img.png');
 	background-size: cover;
-	image-rendering: initial;
+	image-rendering: inherit;
 }
 
 #bio {
