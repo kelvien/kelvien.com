@@ -1598,13 +1598,17 @@ $(window).on('load', function(){
                 $("#kform-wrapper").css({
                     "visibility": "visible"
                 });
-                setTimeout(function() {
-                    $("#kform-wrapper").css({
-                        "opacity": 1
-                    });
-                    formShown = true;
-                }, 1000);
-                $('body').css('overflow', '');
+                new Promise(resolve => {
+                    setTimeout(function() {
+                        $("#kform-wrapper").css({
+                            "opacity": 1
+                        });
+                        formShown = true;
+                        resolve();
+                    }, 1000);
+                }).then(() => {
+                    $('body').css('overflow', '');
+                });
             });
         } else {
             $('body').css('overflow', '');
