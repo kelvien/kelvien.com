@@ -1350,7 +1350,7 @@ $(window).on('load', function(){
                             "display": "block"
                         });
                         if (controller.info('scrollDirection') == 'FORWARD' && (!isValidSubdomain() || triggeredOnSubdomain)) {
-                            $('html').css('overflow', 'hidden')
+                            $('body').css('overflow', 'clip')
                             new Promise(function(resolve) {
                               $("#transition-window").css({
                                     "opacity": 1,
@@ -1386,7 +1386,7 @@ $(window).on('load', function(){
                                     $("#transition-window").css({
                                         "visibility": "hidden"
                                     });
-                                    $('html').css('overflow', '')
+                                    $('body').css('overflow', '')
                                 }, 1000);
                             });
                         } else {
@@ -1564,9 +1564,6 @@ $(window).on('load', function(){
         }
         if (!initialChat) {
             initialChat = true;
-            $("body").css({
-                overflow: "clip"
-            });
             var pre_messages = [];
             if (isReturnsSubdomain()) {
                 pre_messages = [
@@ -1606,9 +1603,6 @@ $(window).on('load', function(){
                 setTimeout(function() {
                     $("#kform-wrapper").css({
                         "opacity": 1
-                    });
-                    $("body").css({
-                        overflow: "initial"
                     });
                     formShown = true;
                 }, 1000);
