@@ -1606,6 +1606,8 @@ $(window).on('load', function(){
                     $('body').css('overflow', '');
                 // }, 1000);
             });
+        } else {
+            $('body').css('overflow', '');
         }
     }
 
