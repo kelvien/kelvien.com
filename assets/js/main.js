@@ -1564,6 +1564,9 @@ $(window).on('load', function(){
         }
         if (!initialChat) {
             initialChat = true;
+            $("body").css({
+                overflow: "clip"
+            });
             var pre_messages = [];
             if (isReturnsSubdomain()) {
                 pre_messages = [
@@ -1600,6 +1603,9 @@ $(window).on('load', function(){
                 $("#kform-wrapper").css({
                     "visibility": "visible"
                 });
+                $("body").css({
+                    overflow: "initial"
+                });
                 setTimeout(function() {
                     $("#kform-wrapper").css({
                         "opacity": 1
@@ -1621,7 +1627,7 @@ $(window).on('load', function(){
         "Oops, looks like there's an error while sending your message",
         "Please send me an email instead at mas@kelvien.com"
     ];
-    
+
     /*
     * Email
     */
@@ -1673,11 +1679,11 @@ $(window).on('load', function(){
                 var date = new Date();
                 var time = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0');
                 $("#kform-wrapper").append("<div id='kguest-message-info'>Sent - " + time + "</div>");
-    
+
                 if (isReturnsSubdomain()) {
                     showDialog(kelvien, 'smile');
                 }
-    
+
                 success_messages.reduce(function(acc, el) {
                     return acc.then(function() {
                         return new Promise(function(resolve) {
