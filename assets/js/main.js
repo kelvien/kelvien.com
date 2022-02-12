@@ -1381,12 +1381,12 @@ $(window).on('load', function(){
                                     }, 1000);
                                 });
                             }).then(function() {
+                                $('body').css('overflow', '');
                                 setTimeout(function() {
                                     // Show message box
                                     $("#transition-window").css({
                                         "visibility": "hidden"
                                     });
-                                    $('body').css('overflow', '')
                                 }, 1000);
                             });
                         } else {
