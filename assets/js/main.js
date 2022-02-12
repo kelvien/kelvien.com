@@ -1603,12 +1603,12 @@ $(window).on('load', function(){
                 $("#kform-wrapper").css({
                     "visibility": "visible"
                 });
-                $("body").css({
-                    overflow: "initial"
-                });
                 setTimeout(function() {
                     $("#kform-wrapper").css({
                         "opacity": 1
+                    });
+                    $("body").css({
+                        overflow: "initial"
                     });
                     formShown = true;
                 }, 1000);
