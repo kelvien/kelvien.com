@@ -1381,9 +1381,7 @@ $(window).on('load', function(){
                                     }, 1000);
                                 });
                             }).then(function() {
-                                $('body').css('overflow', '');
                                 setTimeout(function() {
-                                    // Show message box
                                     $("#transition-window").css({
                                         "visibility": "hidden"
                                     });
@@ -1600,12 +1598,13 @@ $(window).on('load', function(){
                 $("#kform-wrapper").css({
                     "visibility": "visible"
                 });
-                setTimeout(function() {
+                // setTimeout(function() {
                     $("#kform-wrapper").css({
                         "opacity": 1
                     });
                     formShown = true;
-                }, 1000);
+                    $('body').css('overflow', '');
+                // }, 1000);
             });
         }
     }
