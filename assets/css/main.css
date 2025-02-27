@@ -168,7 +168,7 @@ html.not-supported #footer {
 	width: 130px;
 	height: 135px;
 	border-radius: 50%;
-	background-image: url('../media/profile-img.jpg');
+	background-image: url('../media/profile-img.png');
 	background-size: cover;
 	image-rendering: initial;
 	image-rendering: -webkit-optimize-contrast;
