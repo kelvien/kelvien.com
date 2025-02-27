@@ -778,10 +778,10 @@ html, body {
 }
 
 div {
-	image-rendering: pixelated;
+	/* image-rendering: pixelated;
 	image-rendering: -webkit-pixelated;
 	image-rendering: -moz-crisp-edges;
-	 -ms-interpolation-mode: nearest-neighbor;
+	 -ms-interpolation-mode: nearest-neighbor; */
 }
 
 ul li {
