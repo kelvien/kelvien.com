@@ -168,10 +168,6 @@ html.not-supported #footer {
 	width: 130px;
 	height: 135px;
 	border-radius: 50%;
-	background-image: url('../media/profile-img.png');
-	background-size: cover;
-	image-rendering: initial;
-	image-rendering: -webkit-optimize-contrast;
 }
 
 #bio {
@@ -782,10 +778,10 @@ html, body {
 }
 
 div {
-	image-rendering: pixelated;
+	/* image-rendering: pixelated;
 	image-rendering: -webkit-pixelated;
 	image-rendering: -moz-crisp-edges;
-	 -ms-interpolation-mode: nearest-neighbor;
+	 -ms-interpolation-mode: nearest-neighbor; */
 }
 
 ul li {
