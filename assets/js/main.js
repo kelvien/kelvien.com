@@ -1664,7 +1664,7 @@ $(window).on('load', function(){
                     message: $(".kform-input.message").val()
                 };
             }
-            emailjs.send("mailgun", emailJSFormID, body).then(function(response) {
+            emailjs.send("service_5igqrp8", emailJSFormID, body).then(function(response) {
                 // Success
                 var maxDisplayedLength = 255;
                 var displayedMessage = '';
