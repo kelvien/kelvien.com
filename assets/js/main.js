@@ -1245,6 +1245,7 @@ $(window).on('load', function(){
     }
 
     var contactScene = null;
+    var contactTransition = 0;
     function arrangeTimeline() {
         scenes = [];
         var evenOdd;
@@ -1337,6 +1338,7 @@ $(window).on('load', function(){
                         showCompanion(kelvien);
                         break;
                     case 'contact':
+                        var transition = ++contactTransition;
                         if (isReturnsSubdomain()) {
                             chooseMenu('returns');
                         } else {
@@ -1350,7 +1352,6 @@ $(window).on('load', function(){
                             "display": "block"
                         });
                         if (controller.info('scrollDirection') == 'FORWARD' && (!isValidSubdomain() || triggeredOnSubdomain)) {
-                            $('body').css('overflow', 'clip')
                             new Promise(function(resolve) {
                               $("#transition-window").css({
                                     "opacity": 1,
@@ -1361,6 +1362,10 @@ $(window).on('load', function(){
                             }).then(function() {
                                 return new Promise(function(resolve) {
                                     setTimeout(function() {
+                                        if (transition !== contactTransition) {
+                                            resolve();
+                                            return;
+                                        }
                                         cC.css({
                                             "opacity": 0,
                                             "transition": "opacity 0s"
@@ -1382,6 +1387,9 @@ $(window).on('load', function(){
                                 });
                             }).then(function() {
                                 setTimeout(function() {
+                                    if (transition !== contactTransition) {
+                                        return;
+                                    }
                                     $("#transition-window").css({
                                         "visibility": "hidden"
                                     });
@@ -1413,6 +1421,11 @@ $(window).on('load', function(){
                         break;
                     case 'contact':
                         if (controller.info('scrollDirection') == 'REVERSE') {
+                            contactTransition++;
+                            $("#transition-window").css({
+                                "opacity": 0,
+                                "visibility": "hidden"
+                            });
                             chooseMenu('story');
                             $(e).css('opacity', 0);
                             cC.css({
